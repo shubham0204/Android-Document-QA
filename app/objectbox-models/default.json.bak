@@ -43,7 +43,7 @@
     },
     {
       "id": "3:4954452364846618505",
-      "lastPropertyId": "4:5529833912299775293",
+      "lastPropertyId": "3:4610386636528689544",
       "name": "Document",
       "properties": [
         {
@@ -61,11 +61,6 @@
           "id": "3:4610386636528689544",
           "name": "docFileName",
           "type": 9
-        },
-        {
-          "id": "4:5529833912299775293",
-          "name": "docAddedTime",
-          "type": 6
         }
       ],
       "relations": []

@@ -11,6 +11,8 @@ composeBom = "2024.05.00"
 objectboxGradlePlugin = "4.0.0"
 pdfboxVersion = "2.0.0"
 apachePoi = "5.2.5"
+hiltAndroid = "2.50"
+hiltNavigationCompose = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,10 +29,13 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 apache-pdfbox = { module = "org.apache.pdfbox:pdfbox", version.ref = "pdfboxVersion" }
 apache-poi = { module = "org.apache.poi:poi", version.ref = "apachePoi" }
 apache-poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "apachePoi" }
 objectbox = { module = "io.objectbox:objectbox-gradle-plugin", version.ref = "objectboxGradlePlugin" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

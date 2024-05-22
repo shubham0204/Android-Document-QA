@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -69,6 +70,10 @@ dependencies {
 
     debugImplementation("io.objectbox:objectbox-android-objectbrowser:4.0.0")
     releaseImplementation("io.objectbox:objectbox-android:4.0.0")
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
