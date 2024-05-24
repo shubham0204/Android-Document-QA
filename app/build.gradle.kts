@@ -1,9 +1,13 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
 }
+
+val geminiKey: String = gradleLocalProperties(rootDir, providers).getProperty("geminiKey")
 
 android {
     namespace = "com.ml.shubham0204.docqa"
@@ -23,12 +27,18 @@ android {
     }
 
     buildTypes {
+        // Add the field 'geminiKey' in the build config
+        // See https://stackoverflow.com/a/60474096/13546426
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField( "String" , "geminiKey" , geminiKey)
+        }
+        debug {
+            buildConfigField( "String" , "geminiKey" , geminiKey)
         }
     }
     compileOptions {
@@ -40,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -61,15 +72,22 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Apache PDFBook
-    implementation(libs.apache.pdfbox)
-
     // Apache POI
     implementation(libs.apache.poi)
     implementation(libs.apache.poi.ooxml)
 
+    // Mediapipe Text Embedding API - for generating text embeddings
+    implementation(libs.mediapipe.text)
+
+    // iTextPDF - for parsing PDFs
+    implementation("com.itextpdf:itextpdf:5.5.13.3")
+
+    // ObjectBox - vector database
     debugImplementation("io.objectbox:objectbox-android-objectbrowser:4.0.0")
     releaseImplementation("io.objectbox:objectbox-android:4.0.0")
+
+    // Gemini SDK - LLM
+    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)

@@ -13,6 +13,7 @@ pdfboxVersion = "2.0.0"
 apachePoi = "5.2.5"
 hiltAndroid = "2.50"
 hiltNavigationCompose = "1.1.0"
+mediapipeText = "latest.release"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ apache-poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "apacheP
 objectbox = { module = "io.objectbox:objectbox-gradle-plugin", version.ref = "objectboxGradlePlugin" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
+mediapipe-text = { module = "com.google.mediapipe:tasks-text", version.ref = "mediapipeText" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

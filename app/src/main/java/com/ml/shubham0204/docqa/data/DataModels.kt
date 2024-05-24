@@ -7,9 +7,8 @@ import io.objectbox.annotation.Index
 
 @Entity
 data class Chunk(
-    @Id var recordId: Long = 0,
+    @Id var chunkId: Long = 0,
     @Index var docId: Long = 0,
-    var chunkId: String = "",
     var chunkData: String = "",
     @HnswIndex(dimensions = 100) var chunkEmbedding: FloatArray = floatArrayOf()
 )
