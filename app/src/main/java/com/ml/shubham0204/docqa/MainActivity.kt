@@ -4,12 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.ml.shubham0204.docqa.ui.screens.ChatScreen
 import com.ml.shubham0204.docqa.ui.screens.DocsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,13 +17,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { ActivityUI() }
-    }
-
-    @Composable
-    private fun ActivityUI() {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) { DocsScreen() }
+        setContent {
+            val navHostController = rememberNavController()
+            NavHost(navController = navHostController, startDestination = "chat") {
+                composable("docs") { DocsScreen(onBackClick = { navHostController.navigateUp() }) }
+                composable("chat") {
+                    ChatScreen(onOpenDocsClick = { navHostController.navigate("docs") })
+                }
+            }
         }
     }
 }

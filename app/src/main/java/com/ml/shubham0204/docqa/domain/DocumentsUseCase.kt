@@ -11,6 +11,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import setProgressDialogText
 
 @Singleton
 class DocumentsUseCase
@@ -30,7 +31,10 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
                         docAddedTime = System.currentTimeMillis()
                     )
                 )
-            WhiteSpaceSplitter.createChunks(pdfText, chunkSize = 70, chunkOverlap = 30).forEach {
+            setProgressDialogText("Creating chunks...")
+            val chunks = WhiteSpaceSplitter.createChunks(pdfText, chunkSize = 70, chunkOverlap = 30)
+            setProgressDialogText("Adding chunks to database...")
+            chunks.forEach {
                 Log.e("APP", "Chunk added: $it")
                 chunksUseCase.addChunk(newDocId, it)
             }
