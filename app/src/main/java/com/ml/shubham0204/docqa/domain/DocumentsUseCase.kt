@@ -46,5 +46,6 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
 
     fun removeDocument(docId: Long) {
         documentsDB.removeDocument(docId)
+        chunksUseCase.removeChunks(docId)
     }
 }

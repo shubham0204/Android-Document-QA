@@ -12,8 +12,7 @@ class DocsViewModel
 @Inject
 constructor(
     val documentsUseCase: DocumentsUseCase,
-    val chunksUseCase: ChunksUseCase,
-    val qaUseCase: QAUseCase
+    val chunksUseCase: ChunksUseCase
 ) : ViewModel() {
 
     val documentsFlow = documentsUseCase.getAllDocuments()

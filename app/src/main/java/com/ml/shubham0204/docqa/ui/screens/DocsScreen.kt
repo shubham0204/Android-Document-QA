@@ -4,7 +4,6 @@ import AppProgressDialog
 import android.content.Intent
 import android.provider.OpenableColumns
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -22,20 +21,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FileCopy
+import androidx.compose.material.icons.filled.Notes
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +46,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.data.Document
 import com.ml.shubham0204.docqa.ui.components.AppAlertDialog
 import com.ml.shubham0204.docqa.ui.components.createAlertDialog
@@ -56,24 +58,36 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import showProgressDialog
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocsScreen(onBackClick: (() -> Unit)) {
     DocQATheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Manage Documents",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Navigate Back"
+                            )
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
             val docsViewModel: DocsViewModel = hiltViewModel()
-            Column(modifier = Modifier.padding(innerPadding).padding(top = 22.dp).fillMaxWidth()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Navigate back",
-                        modifier = Modifier.clickable { onBackClick() }.padding(horizontal = 8.dp)
-                    )
-                    Text(
-                        text = "Manage Documents",
-                        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().weight(1f),
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                }
+            Column(modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 DocsList(docsViewModel)
                 DocOperations(docsViewModel)
@@ -88,7 +102,9 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
 @Composable
 private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
     val docs by docsViewModel.documentsFlow.collectAsState(emptyList())
-    LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
+        .weight(1f)) {
         items(docs) { doc ->
             DocsListItem(
                 doc,
@@ -100,9 +116,13 @@ private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
 
 @Composable
 private fun DocsListItem(document: Document, onRemoveDocClick: ((Long) -> Unit)) {
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)) {
                 Text(
                     text = document.docFileName,
                     style = MaterialTheme.typography.bodyLarge,
@@ -177,28 +197,17 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
         }
 
     Row(
-        modifier = Modifier.padding(24.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(24.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Button(onClick = { launcher.launch(intent) }) { Text(text = "Add document") }
-        Button(onClick = { launcher.launch(intent) }) { Text(text = "Add document") }
-    }
-}
-
-@Composable
-private fun AnswerQuestion(docsViewModel: DocsViewModel) {
-    val context = LocalContext.current
-    var query by remember { mutableStateOf("") }
-    TextField(value = query, onValueChange = { query = it })
-    Button(
-        onClick = {
-            showProgressDialog()
-            docsViewModel.qaUseCase.getAnswer(query, context.getString(R.string.prompt_1)) {
-                hideProgressDialog()
-                Log.e("RAGResponse", "Response $it")
-            }
+        Button(onClick = { launcher.launch(intent) }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add PDF document")
+            Text(text = "PDF doc") }
+        Button(onClick = { launcher.launch(intent) }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add DOCX document")
+            Text(text = "DOCX doc")
         }
-    ) {
-        Text(text = "Answer")
     }
 }
