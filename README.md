@@ -51,7 +51,20 @@ the extent of overlap between two sequences (`chunkOverlap`). See [WhiteSpaceSpl
 4. When the user submits a query, we find the top-K most similar chunks from the database by comparing their embeddings.
 5. The chunks corresponding to the nearest embeddings are injected into a pre-built prompt along with the query, which is provided to the LLM. The LLM generates a well-formed natural language answer to the user's query. See [GeminiRemoteAPI.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/llm/GeminiRemoteAPI.kt) for reference.
 
-See the [prompt here](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/res/values/strings.xml).
+See the [prompt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/res/values/strings.xml),
+
+```text
+You are an intelligent search engine. You will be provided with some retrieved context, as well as the users query.
+Your job is to understand the request, and answer based on the retrieved context.
+Strictly Use ONLY the following pieces of context to answer the question at the end.
+Think step-by-step and then answer.
+
+Here is the retrieved context:
+    $CONTEXT
+
+Here is the users query:
+    $QUERY
+```
 
 ## Discussion
 
