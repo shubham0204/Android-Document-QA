@@ -3,7 +3,7 @@ package com.ml.shubham0204.docqa.domain
 import android.util.Log
 import com.ml.shubham0204.docqa.data.Document
 import com.ml.shubham0204.docqa.data.DocumentsDB
-import com.ml.shubham0204.docqa.domain.readers.PDFReader
+import com.ml.shubham0204.docqa.domain.readers.Readers
 import com.ml.shubham0204.docqa.domain.splitters.WhiteSpaceSplitter
 import java.io.InputStream
 import javax.inject.Inject
@@ -18,21 +18,26 @@ class DocumentsUseCase
 @Inject
 constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: DocumentsDB) {
 
-    suspend fun addDocument(inputStream: InputStream, fileName: String) =
+    suspend fun addDocument(
+        inputStream: InputStream,
+        fileName: String,
+        documentType: Readers.DocumentType
+    ) =
         withContext(Dispatchers.IO) {
-            val pdfReader = PDFReader()
-            val pdfText = pdfReader.readFromInputStream(inputStream)
-            Log.e("APP", "PDF Text: $pdfText")
+            val text =
+                Readers.getReaderForDocType(documentType).readFromInputStream(inputStream)
+                    ?: return@withContext
+            Log.e("APP", "PDF Text: $text")
             val newDocId =
                 documentsDB.addDocument(
                     Document(
-                        docText = pdfText,
+                        docText = text,
                         docFileName = fileName,
                         docAddedTime = System.currentTimeMillis()
                     )
                 )
             setProgressDialogText("Creating chunks...")
-            val chunks = WhiteSpaceSplitter.createChunks(pdfText, chunkSize = 70, chunkOverlap = 30)
+            val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 200, chunkOverlap = 50)
             setProgressDialogText("Adding chunks to database...")
             chunks.forEach {
                 Log.e("APP", "Chunk added: $it")
@@ -48,4 +53,9 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
         documentsDB.removeDocument(docId)
         chunksUseCase.removeChunks(docId)
     }
+
+    fun getDocsCount(): Long {
+        return documentsDB.getDocsCount()
+    }
+
 }

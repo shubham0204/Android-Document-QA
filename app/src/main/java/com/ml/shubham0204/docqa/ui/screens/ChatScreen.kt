@@ -1,5 +1,7 @@
 package com.ml.shubham0204.docqa.ui.screens
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,12 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
@@ -56,7 +62,7 @@ fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
                     actions = {
                         IconButton(onClick = onOpenDocsClick) {
                             Icon(
-                                imageVector = Icons.Default.PictureAsPdf,
+                                imageVector = Icons.Default.Folder,
                                 contentDescription = "Open Documents"
                             )
                         }
@@ -81,6 +87,7 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
     val question by remember { chatViewModel.questionState }
     val response by remember { chatViewModel.responseState }
     val isGeneratingResponse by remember { chatViewModel.isGeneratingResponseState }
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).weight(1f),
     ) {
@@ -93,9 +100,14 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                 Icon(
                     modifier = Modifier.size(75.dp),
                     imageVector = Icons.Default.Search,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Color.LightGray
                 )
-                Text(text = "Enter a query to see answers", style=MaterialTheme.typography.labelSmall)
+                Text(
+                    text = "Enter a query to see answers",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.LightGray
+                )
             }
         } else {
             Text(text = question, style = MaterialTheme.typography.headlineLarge)
@@ -103,15 +115,43 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                 Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             } else {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = response,
-                    color = Color.White,
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(
                     modifier =
                         Modifier.background(Color.Blue, RoundedCornerShape(16.dp))
-                            .padding(32.dp)
+                            .padding(24.dp)
                             .fillMaxWidth()
-                )
+                ) {
+                    Text(
+                        text = response,
+                        color = Color.White,
+                        modifier = Modifier.fillMaxWidth(),
+                        fontSize = 16.sp
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        IconButton(
+                            onClick = {
+                                val sendIntent: Intent =
+                                    Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, response)
+                                        type = "text/plain"
+                                    }
+                                val shareIntent = Intent.createChooser(sendIntent, null)
+                                context.startActivity(shareIntent)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "Share the response",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -123,7 +163,7 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
     val context = LocalContext.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextField(
-            modifier = Modifier.fillMaxWidth().background(Color.White).weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             value = questionText,
             onValueChange = { questionText = it },
             shape = RoundedCornerShape(16.dp),
@@ -137,9 +177,20 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
                 ),
             placeholder = { Text(text = "Ask documents...") }
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         IconButton(
+            modifier = Modifier.background(Color.Blue, CircleShape),
             onClick = {
+                if (!chatViewModel.qaUseCase.canGenerateAnswers()) {
+                    Toast.makeText(context, "Add documents to execute queries", Toast.LENGTH_LONG)
+                        .show()
+                    return@IconButton
+                }
+                if (questionText.trim().isEmpty()) {
+                    Toast.makeText(context, "Enter a query to execute", Toast.LENGTH_LONG).show()
+                    return@IconButton
+                }
+
                 chatViewModel.questionState.value = questionText
                 questionText = ""
                 chatViewModel.isGeneratingResponseState.value = true
@@ -152,7 +203,11 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
                 }
             }
         ) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = "Send query")
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = "Send query",
+                tint = Color.White
+            )
         }
     }
 }

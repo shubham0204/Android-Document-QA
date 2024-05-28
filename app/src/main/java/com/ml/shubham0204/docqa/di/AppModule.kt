@@ -3,8 +3,8 @@ package com.ml.shubham0204.docqa.di
 import android.app.Application
 import com.ml.shubham0204.docqa.data.ChunksDB
 import com.ml.shubham0204.docqa.data.DocumentsDB
-import com.ml.shubham0204.docqa.data.GeminiRemoteAPI
 import com.ml.shubham0204.docqa.domain.embeddings.UniversalSentenceEncoder
+import com.ml.shubham0204.docqa.domain.llm.GeminiRemoteAPI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

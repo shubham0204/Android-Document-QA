@@ -21,4 +21,9 @@ class DocumentsDB {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAllDocuments(): Flow<MutableList<Document>> =
         docsBox.query(Document_.docId.notNull()).build().flow().flowOn(Dispatchers.IO)
+
+    fun getDocsCount(): Long {
+        return docsBox.count()
+    }
+
 }

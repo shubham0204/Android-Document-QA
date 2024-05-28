@@ -1,5 +1,6 @@
 package com.ml.shubham0204.docqa.domain
 
+import android.util.Log
 import com.ml.shubham0204.docqa.data.Chunk
 import com.ml.shubham0204.docqa.data.ChunksDB
 import com.ml.shubham0204.docqa.domain.embeddings.UniversalSentenceEncoder
@@ -13,6 +14,7 @@ constructor(private val chunksDB: ChunksDB, private val sentenceEncoder: Univers
 
     fun addChunk(docId: Long, chunkText: String) {
         val embedding = sentenceEncoder.encodeText(chunkText)
+        Log.e("APP", "Embedding dims ${embedding.size}")
         chunksDB.addChunk(Chunk(docId = docId, chunkData = chunkText, chunkEmbedding = embedding))
     }
 

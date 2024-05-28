@@ -7,14 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ChatViewModel
-@Inject
-constructor(
-    val qaUseCase: QAUseCase
-): ViewModel() {
+class ChatViewModel @Inject constructor(val qaUseCase: QAUseCase) : ViewModel() {
 
-    val questionState = mutableStateOf( "" )
-    val responseState = mutableStateOf( "" )
-    val isGeneratingResponseState = mutableStateOf( false )
+    val questionState = mutableStateOf("")
+    val responseState = mutableStateOf("")
+    val isGeneratingResponseState = mutableStateOf(false)
 
 }
