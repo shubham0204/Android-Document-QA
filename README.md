@@ -7,6 +7,8 @@ https://github.com/shubham0204/Android-Document-QA/assets/41076823/d4d6a21c-a29e
 
 (The PDF used in the demo can be found in [resources](https://github.com/shubham0204/Android-Document-QA/tree/main/resources) directory)
 
+[YT Video](https://youtu.be/Av0N40Weu0M?feature=shared)
+
 ## Goals
 
 - Demonstrate the collective use of an on-device vector database, embeddings model and a custom text-splitter to build a retrieval-augmented generation (RAG) based pipeline for simple document question-answering
