@@ -37,7 +37,7 @@ Perform a Gradle sync, and run the application.
 1. [Apache POI](https://poi.apache.org/) and [iTextPDF](https://github.com/itext/itextpdf) for parsing DOCX and PDF documents
 2. [ObjectBox](https://objectbox.io/) for on-device vector-store and NoSQL database
 3. [Mediapipe Text Embedding](https://ai.google.dev/edge/mediapipe/solutions/text/text_embedder/android) for generating on-device text/sentence embeddings
-4. [Gemini Android SDK](https://developer.android.com/ai/google-ai-client-sdk) as a hosted large-language model
+4. [Gemini Android SDK](https://developer.android.com/ai/google-ai-client-sdk) as a hosted large-language model (Uses Gemini-1.5-Flash)
 
 ## Working 
 
@@ -57,7 +57,7 @@ See the [prompt](https://github.com/shubham0204/Android-Document-QA/blob/main/ap
 You are an intelligent search engine. You will be provided with some retrieved context, as well as the users query.
 Your job is to understand the request, and answer based on the retrieved context.
 Strictly Use ONLY the following pieces of context to answer the question at the end.
-Think step-by-step and then answer.
+Provide only the answer as a response
 
 Here is the retrieved context:
     $CONTEXT
@@ -91,7 +91,7 @@ After checking the retrieved context (similar chunks) for a few questions, I rec
 
 ## Contributions and Open Problems
 
-Feel free to [raise an issue] or [open a PR]. The following can be improved in the app:
+Feel free to [raise an issue](https://github.com/shubham0204/Android-Document-QA/issues/new) or [open a PR](https://github.com/shubham0204/Android-Document-QA/pulls). The following can be improved in the app:
 
 1. Add on-device LLM capabilities
 2. Build a new text-splitter, taking inspiration from Langchain or LlamaIndex
