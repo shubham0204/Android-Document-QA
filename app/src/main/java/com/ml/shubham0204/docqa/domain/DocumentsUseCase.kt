@@ -39,10 +39,7 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
             setProgressDialogText("Creating chunks...")
             val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 200, chunkOverlap = 50)
             setProgressDialogText("Adding chunks to database...")
-            chunks.forEach {
-                Log.e("APP", "Chunk added: $it")
-                chunksUseCase.addChunk(newDocId, it)
-            }
+            chunks.forEach { chunksUseCase.addChunk(newDocId, fileName, it) }
         }
 
     fun getAllDocuments(): Flow<List<Document>> {
@@ -57,5 +54,4 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
     fun getDocsCount(): Long {
         return documentsDB.getDocsCount()
     }
-
 }

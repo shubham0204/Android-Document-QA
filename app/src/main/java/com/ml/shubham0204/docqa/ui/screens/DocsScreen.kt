@@ -93,10 +93,7 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
             }
         ) { innerPadding ->
             val docsViewModel: DocsViewModel = hiltViewModel()
-            Column(modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .fillMaxWidth()) {
+            Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 DocsList(docsViewModel)
                 DocOperations(docsViewModel)
@@ -111,9 +108,7 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
 @Composable
 private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
     val docs by docsViewModel.documentsFlow.collectAsState(emptyList())
-    LazyColumn(modifier = Modifier
-        .fillMaxSize()
-        .weight(1f)) {
+    LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
         items(docs) { doc ->
             DocsListItem(
                 doc,
@@ -126,19 +121,17 @@ private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
 @Composable
 private fun DocsListItem(document: Document, onRemoveDocClick: ((Long) -> Unit)) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                dialogDoc.value = document
-                showDocDetailDialog.value = true
-            }
-            .background(Color.White)
-            .padding(12.dp),
+        modifier =
+            Modifier.fillMaxWidth()
+                .clickable {
+                    dialogDoc.value = document
+                    showDocDetailDialog.value = true
+                }
+                .background(Color.White)
+                .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)) {
+        Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Text(
                 text = document.docFileName,
                 style = MaterialTheme.typography.bodyLarge,
@@ -216,9 +209,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
         }
 
     Row(
-        modifier = Modifier
-            .padding(24.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.padding(24.dp).fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
@@ -255,20 +246,17 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
 private fun DocDetailDialog() {
     var isVisible by remember { showDocDetailDialog }
     val context = LocalContext.current
-    val doc by remember{ dialogDoc }
+    val doc by remember { dialogDoc }
     if (isVisible && doc != null) {
         Dialog(onDismissRequest = { /* Progress dialogs are non-cancellable */ }) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.White, shape = RoundedCornerShape(8.dp))
-                    .padding(24.dp)
+                    Modifier.fillMaxWidth()
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .padding(24.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.Start
-                ) {
+                Column(horizontalAlignment = Alignment.Start) {
                     Text(
                         text = doc?.docFileName ?: "",
                         style = MaterialTheme.typography.headlineSmall
@@ -276,12 +264,13 @@ private fun DocDetailDialog() {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = doc?.docText ?: "",
-                        modifier = Modifier
-                            .height(200.dp)
-                            .verticalScroll(rememberScrollState())
+                        modifier = Modifier.height(200.dp).verticalScroll(rememberScrollState())
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Row( horizontalArrangement = Arrangement.SpaceEvenly , modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                             onClick = {
@@ -294,11 +283,15 @@ private fun DocDetailDialog() {
                                 val shareIntent = Intent.createChooser(sendIntent, null)
                                 context.startActivity(shareIntent)
                             }
-                        ) { Text(text = "Share Text") }
+                        ) {
+                            Text(text = "Share Text")
+                        }
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                             onClick = { isVisible = false }
-                        ) { Text(text = "Close") }
+                        ) {
+                            Text(text = "Close")
+                        }
                     }
                 }
             }

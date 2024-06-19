@@ -12,10 +12,17 @@ class ChunksUseCase
 @Inject
 constructor(private val chunksDB: ChunksDB, private val sentenceEncoder: UniversalSentenceEncoder) {
 
-    fun addChunk(docId: Long, chunkText: String) {
+    fun addChunk(docId: Long, docFileName: String, chunkText: String) {
         val embedding = sentenceEncoder.encodeText(chunkText)
         Log.e("APP", "Embedding dims ${embedding.size}")
-        chunksDB.addChunk(Chunk(docId = docId, chunkData = chunkText, chunkEmbedding = embedding))
+        chunksDB.addChunk(
+            Chunk(
+                docId = docId,
+                docFileName = docFileName,
+                chunkData = chunkText,
+                chunkEmbedding = embedding
+            )
+        )
     }
 
     fun removeChunks(docId: Long) {

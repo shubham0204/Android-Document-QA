@@ -1,8 +1,8 @@
 package com.ml.shubham0204.docqa.domain.readers
 
+import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.IOException
 import java.io.InputStream
-import org.apache.poi.xwpf.usermodel.XWPFDocument
 
 class DOCXReader : Reader() {
 

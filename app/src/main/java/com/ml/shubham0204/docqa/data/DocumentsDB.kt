@@ -25,5 +25,4 @@ class DocumentsDB {
     fun getDocsCount(): Long {
         return docsBox.count()
     }
-
 }
