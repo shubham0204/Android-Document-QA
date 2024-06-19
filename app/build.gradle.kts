@@ -76,9 +76,6 @@ dependencies {
     implementation(libs.apache.poi)
     implementation(libs.apache.poi.ooxml)
 
-    // Mediapipe Text Embedding API - for generating text embeddings
-    implementation(libs.mediapipe.text)
-
     // iTextPDF - for parsing PDFs
     implementation("com.itextpdf:itextpdf:5.5.13.3")
 
@@ -88,6 +85,10 @@ dependencies {
 
     // Gemini SDK - LLM
     implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
+
+    // ONNX Runtime
+    implementation(files("./libs/sentence_embeddings.aar"))
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
 
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)

@@ -40,8 +40,6 @@ class WhiteSpaceSplitter {
                 if (currChunk.isNotEmpty()) {
                     chunks.add(currChunk)
                 }
-                Log.e("APP", "Chunks are ${chunks.toTypedArray().contentToString()}")
-
                 val overlappingChunks = ArrayList<String>(chunks)
                 if (chunkOverlap > 1 && chunks.size > 0) {
                     for (i in 0..<chunks.size - 1) {
@@ -54,7 +52,6 @@ class WhiteSpaceSplitter {
                         )
                     }
                 }
-
                 textChunks.addAll(overlappingChunks)
             }
             return textChunks

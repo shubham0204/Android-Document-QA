@@ -40,7 +40,6 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
             val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 200, chunkOverlap = 50)
             setProgressDialogText("Adding chunks to database...")
             chunks.forEach {
-                Log.e("APP", "Chunk added: $it")
                 chunksUseCase.addChunk(newDocId, it)
             }
         }
