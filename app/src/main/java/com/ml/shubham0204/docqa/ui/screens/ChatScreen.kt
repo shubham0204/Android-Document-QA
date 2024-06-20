@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Folder
@@ -42,9 +42,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
@@ -87,9 +87,10 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
     val question by remember { chatViewModel.questionState }
     val response by remember { chatViewModel.responseState }
     val isGeneratingResponse by remember { chatViewModel.isGeneratingResponseState }
+    val retrievedContextList by remember { chatViewModel.retrievedContextListState }
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).weight(1f),
+        modifier = Modifier.fillMaxSize().weight(1f),
     ) {
         if (question.trim().isEmpty()) {
             Column(
@@ -115,39 +116,69 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                 Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             } else {
-                Spacer(modifier = Modifier.height(16.dp))
-                Column(
-                    modifier =
-                        Modifier.background(Color.Blue, RoundedCornerShape(16.dp))
-                            .padding(24.dp)
-                            .fillMaxWidth()
-                ) {
-                    Text(
-                        text = response,
-                        color = Color.White,
-                        modifier = Modifier.fillMaxWidth(),
-                        fontSize = 16.sp
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        IconButton(
-                            onClick = {
-                                val sendIntent: Intent =
-                                    Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(Intent.EXTRA_TEXT, response)
-                                        type = "text/plain"
-                                    }
-                                val shareIntent = Intent.createChooser(sendIntent, null)
-                                context.startActivity(shareIntent)
-                            }
+                LazyColumn {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Column(
+                            modifier =
+                                Modifier.background(Color.Blue, RoundedCornerShape(16.dp))
+                                    .padding(24.dp)
+                                    .fillMaxWidth()
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Share,
-                                contentDescription = "Share the response",
-                                tint = Color.White
+                            Text(
+                                text = response,
+                                color = Color.White,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 16.sp
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        val sendIntent: Intent =
+                                            Intent().apply {
+                                                action = Intent.ACTION_SEND
+                                                putExtra(Intent.EXTRA_TEXT, response)
+                                                type = "text/plain"
+                                            }
+                                        val shareIntent = Intent.createChooser(sendIntent, null)
+                                        context.startActivity(shareIntent)
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Share,
+                                        contentDescription = "Share the response",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Context", style = MaterialTheme.typography.headlineSmall)
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    items(retrievedContextList) { retrievedContext ->
+                        Column(
+                            modifier =
+                                Modifier.padding(8.dp)
+                                    .background(Color.Cyan, RoundedCornerShape(16.dp))
+                                    .padding(16.dp)
+                                    .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "\"${retrievedContext.context}\"",
+                                color = Color.Black,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 12.sp,
+                                fontStyle = FontStyle.Italic
+                            )
+                            Text(
+                                text = retrievedContext.fileName,
+                                color = Color.Black,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 10.sp
                             )
                         }
                     }
@@ -199,7 +230,8 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
                     context.getString(R.string.prompt_1)
                 ) {
                     chatViewModel.isGeneratingResponseState.value = false
-                    chatViewModel.responseState.value = it
+                    chatViewModel.responseState.value = it.response
+                    chatViewModel.retrievedContextListState.value = it.context
                 }
             }
         ) {

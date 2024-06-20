@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:8449246619297061692",
-      "lastPropertyId": "5:905490671636322609",
+      "lastPropertyId": "4:3036087631455216131",
       "name": "Chunk",
       "properties": [
         {
@@ -32,11 +32,6 @@
           "indexId": "2:6017931583076154525",
           "type": 28,
           "flags": 8
-        },
-        {
-          "id": "5:905490671636322609",
-          "name": "docFileName",
-          "type": 9
         }
       ],
       "relations": []

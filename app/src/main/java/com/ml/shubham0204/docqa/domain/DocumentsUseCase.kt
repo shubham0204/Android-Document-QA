@@ -37,10 +37,12 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
                     )
                 )
             setProgressDialogText("Creating chunks...")
-            val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 200, chunkOverlap = 50)
+            val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 500, chunkOverlap = 50)
             setProgressDialogText("Adding chunks to database...")
-            chunks.forEach {
-                chunksUseCase.addChunk(newDocId, it)
+            val size = chunks.size
+            chunks.forEachIndexed { index, s ->
+                setProgressDialogText("Added ${index+1}/${size} chunk(s) to database...")
+                chunksUseCase.addChunk(newDocId, fileName, s)
             }
         }
 
@@ -56,5 +58,4 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
     fun getDocsCount(): Long {
         return documentsDB.getDocsCount()
     }
-
 }

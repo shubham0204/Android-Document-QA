@@ -4,6 +4,7 @@ import android.util.Log
 import com.ml.shubham0204.docqa.data.Chunk
 import com.ml.shubham0204.docqa.data.ChunksDB
 import com.ml.shubham0204.docqa.domain.embeddings.SentenceEmbeddingProvider
+import com.ml.shubham0204.docqa.domain.embeddings.UniversalSentenceEncoder
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,9 +13,17 @@ class ChunksUseCase
 @Inject
 constructor(private val chunksDB: ChunksDB, private val sentenceEncoder: SentenceEmbeddingProvider) {
 
-    fun addChunk(docId: Long, chunkText: String) {
+    fun addChunk(docId: Long, docFileName: String, chunkText: String) {
         val embedding = sentenceEncoder.encodeText(chunkText)
-        chunksDB.addChunk(Chunk(docId = docId, chunkData = chunkText, chunkEmbedding = embedding))
+        Log.e("APP", "Embedding dims ${embedding.size}")
+        chunksDB.addChunk(
+            Chunk(
+                docId = docId,
+                docFileName = docFileName,
+                chunkData = chunkText,
+                chunkEmbedding = embedding
+            )
+        )
     }
 
     fun removeChunks(docId: Long) {
