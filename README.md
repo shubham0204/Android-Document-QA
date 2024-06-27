@@ -15,6 +15,13 @@ https://github.com/shubham0204/Android-Document-QA/assets/41076823/d4d6a21c-a29e
 - Use modern Android development practices and recommended architecture guidelines
 - Explore and suggest better tools/alternatives for building fully offline, on-device RAG pipeline for Android with minimum compute and storage requirements
 
+| Feature            | On-Device | Remote |
+|--------------------|-----------|--------|
+| Sentence Embedding | ✅         |        |
+| Text Splitter      | ✅         |        |
+| Vector Database    | ✅         |        |
+| LLM                |           | ✅      |
+
 ## Setup
 
 1. Clone the `main` branch, 
