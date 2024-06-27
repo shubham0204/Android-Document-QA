@@ -76,8 +76,9 @@ dependencies {
     implementation(libs.apache.poi)
     implementation(libs.apache.poi.ooxml)
 
-    // Mediapipe Text Embedding API - for generating text embeddings
-    implementation(libs.mediapipe.text)
+    // Sentence Embeddings
+    // https://github.com/shubham0204/Sentence-Embeddings-Android
+    implementation("com.github.shubham0204:Sentence-Embeddings-Android:0.0.3")
 
     // iTextPDF - for parsing PDFs
     implementation("com.itextpdf:itextpdf:5.5.13.3")

@@ -36,7 +36,7 @@ Perform a Gradle sync, and run the application.
 
 1. [Apache POI](https://poi.apache.org/) and [iTextPDF](https://github.com/itext/itextpdf) for parsing DOCX and PDF documents
 2. [ObjectBox](https://objectbox.io/) for on-device vector-store and NoSQL database
-3. [Mediapipe Text Embedding](https://ai.google.dev/edge/mediapipe/solutions/text/text_embedder/android) for generating on-device text/sentence embeddings
+3. [Sentence Embeddings (`all-MiniLM-L6-V2`)](https://github.com/shubham0204/Sentence-Embeddings-Android) for generating on-device text/sentence embeddings
 4. [Gemini Android SDK](https://developer.android.com/ai/google-ai-client-sdk) as a hosted large-language model (Uses Gemini-1.5-Flash)
 
 ## Working 
@@ -47,7 +47,7 @@ The basic working flow on the app is as follows:
 the libraries mentioned in (1) of [Tools](#tools). See [PDFReader.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/readers/PDFReader.kt) and [DOCXReader.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/readers/DOCXReader.kt) for reference.
 2. Chunks or overlapping sub-sequences are produced from the text, given the size of sequence (`chunkSize`) and 
 the extent of overlap between two sequences (`chunkOverlap`). See [WhiteSpaceSplitter.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/splitters/WhiteSpaceSplitter.kt) for reference.
-3. Each chunk is encoded into a fixed-size vector i.e. a text embedding. The embeddings are inserted in the vector database, with each chunk/embedding having a distinct `chunkId`. See [UniversalSentenceEncoder.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/embeddings/UniversalSentenceEncoder.kt) for reference.
+3. Each chunk is encoded into a fixed-size vector i.e. a text embedding. The embeddings are inserted in the vector database, with each chunk/embedding having a distinct `chunkId`. See [SentenceEmbeddingProvider.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/embeddings/SentenceEmbeddingProvider.kt) for reference.
 4. When the user submits a query, we find the top-K most similar chunks from the database by comparing their embeddings.
 5. The chunks corresponding to the nearest embeddings are injected into a pre-built prompt along with the query, which is provided to the LLM. The LLM generates a well-formed natural language answer to the user's query. See [GeminiRemoteAPI.kt](https://github.com/shubham0204/Android-Document-QA/blob/main/app/src/main/java/com/ml/shubham0204/docqa/domain/llm/GeminiRemoteAPI.kt) for reference.
 
@@ -83,11 +83,18 @@ Other tools for using LLMs on Android:
 1. [mlc](https://llm.mlc.ai/docs/deploy/android.html) (Also see [Llama3 on Android](https://github.com/NSTiwari/Llama3-on-Mobile))
 2. [llama.cpp for Android](https://github.com/JackZeng0208/llama.cpp-android-tutorial)
 
-### Better alternatives for the Universal Sentence Encoder (embedding model)
+### (Solved) Better alternatives for the Universal Sentence Encoder (embedding model)
 
+#### Problem: 
 The app currently uses the [Universal Sentence Encoder](https://www.kaggle.com/models/google/universal-sentence-encoder) model from Google, as it was the only possible way to generate text/sentence embeddings on an Android device, with a builtin API and tokenizer. It generates an embedding of size 100. 
 
 After checking the retrieved context (similar chunks) for a few questions, I recognized that the embedding model was not able to understand the context of the sentence to a significant extent. I couldn't find a metric to validate this point on [HuggingFace's MTEB](https://huggingface.co/spaces/mteb/leaderboard). Models such as [sentence-transformers](https://huggingface.co/sentence-transformers) were particular great at understanding context, but their integration in an Android app remains an open problem.
+
+#### Solution
+
+The `all-MiniLM-L2-V6` model from [sentence-transformers](https://huggingface.co/sentence-transformers) has been ported to Android with the help of ONNX/onnxruntime and the Rust-implementation of [huggingface/tokenziers](https://github.com/huggingface/tokenizers). See the app's [assets](https://github.com/shubham0204/Android-Document-QA/tree/main/app/src/main/assets) folder to find the ONNX model `tokenizer.json`
+
+See the main repository [shubham0204/Sentence-Embeddings-Android](https://github.com/shubham0204/Sentence-Embeddings-Android) for more details.
 
 ## Contributions and Open Problems
 

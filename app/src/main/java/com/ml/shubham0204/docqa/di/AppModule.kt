@@ -3,7 +3,7 @@ package com.ml.shubham0204.docqa.di
 import android.app.Application
 import com.ml.shubham0204.docqa.data.ChunksDB
 import com.ml.shubham0204.docqa.data.DocumentsDB
-import com.ml.shubham0204.docqa.domain.embeddings.UniversalSentenceEncoder
+import com.ml.shubham0204.docqa.domain.embeddings.SentenceEmbeddingProvider
 import com.ml.shubham0204.docqa.domain.llm.GeminiRemoteAPI
 import dagger.Module
 import dagger.Provides
@@ -40,7 +40,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSentenceEncoder(context: Application): UniversalSentenceEncoder {
-        return UniversalSentenceEncoder(context)
+    fun provideSentenceEncoder(context: Application): SentenceEmbeddingProvider {
+        return SentenceEmbeddingProvider(context)
     }
 }

@@ -11,7 +11,7 @@ data class Chunk(
     @Index var docId: Long = 0,
     var docFileName: String = "",
     var chunkData: String = "",
-    @HnswIndex(dimensions = 100) var chunkEmbedding: FloatArray = floatArrayOf()
+    @HnswIndex(dimensions = 384) var chunkEmbedding: FloatArray = floatArrayOf()
 )
 
 @Entity
