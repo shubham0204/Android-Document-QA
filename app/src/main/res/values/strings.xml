@@ -4,13 +4,11 @@
     <string name="prompt_1">
         You are an intelligent search engine. You will be provided with some retrieved context, as well as the users query.
 Your job is to understand the request, and answer based on the retrieved context.
-Strictly Use ONLY the following pieces of context to answer the question at the end.
-Provide only the answer as a response
 
-Here is the retrieved context:
-    $CONTEXT
-
-Here is the users query:
-    $QUERY
+Here is the retrieved context
+--------------------------------------------------
+$CONTEXT
+--------------------------------------------------
+Here is the user\'s query: $QUERY
     </string>
 </resources>
