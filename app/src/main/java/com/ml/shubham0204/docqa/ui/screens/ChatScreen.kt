@@ -111,19 +111,22 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                 )
             }
         } else {
-            Text(text = question, style = MaterialTheme.typography.headlineLarge)
-            if (isGeneratingResponse) {
-                Spacer(modifier = Modifier.height(4.dp))
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            } else {
-                LazyColumn {
-                    item {
+            LazyColumn {
+                item {
+                    Text(text = question, style = MaterialTheme.typography.headlineLarge)
+                    if (isGeneratingResponse) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
+                }
+                item {
+                    if (!isGeneratingResponse) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Column(
                             modifier =
-                                Modifier.background(Color.Blue, RoundedCornerShape(16.dp))
-                                    .padding(24.dp)
-                                    .fillMaxWidth()
+                            Modifier.background(Color.Blue, RoundedCornerShape(16.dp))
+                                .padding(24.dp)
+                                .fillMaxWidth()
                         ) {
                             Text(
                                 text = response,
@@ -159,28 +162,28 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                         Text(text = "Context", style = MaterialTheme.typography.headlineSmall)
                         Spacer(modifier = Modifier.height(4.dp))
                     }
-                    items(retrievedContextList) { retrievedContext ->
-                        Column(
-                            modifier =
-                                Modifier.padding(8.dp)
-                                    .background(Color.Cyan, RoundedCornerShape(16.dp))
-                                    .padding(16.dp)
-                                    .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "\"${retrievedContext.context}\"",
-                                color = Color.Black,
-                                modifier = Modifier.fillMaxWidth(),
-                                fontSize = 12.sp,
-                                fontStyle = FontStyle.Italic
-                            )
-                            Text(
-                                text = retrievedContext.fileName,
-                                color = Color.Black,
-                                modifier = Modifier.fillMaxWidth(),
-                                fontSize = 10.sp
-                            )
-                        }
+                }
+                items(retrievedContextList) { retrievedContext ->
+                    Column(
+                        modifier =
+                            Modifier.padding(8.dp)
+                                .background(Color.Cyan, RoundedCornerShape(16.dp))
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "\"${retrievedContext.context}\"",
+                            color = Color.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            fontSize = 12.sp,
+                            fontStyle = FontStyle.Italic
+                        )
+                        Text(
+                            text = retrievedContext.fileName,
+                            color = Color.Black,
+                            modifier = Modifier.fillMaxWidth(),
+                            fontSize = 10.sp
+                        )
                     }
                 }
             }
