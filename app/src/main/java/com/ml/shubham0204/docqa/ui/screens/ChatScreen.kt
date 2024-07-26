@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
@@ -168,27 +169,29 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
-                items(retrievedContextList) { retrievedContext ->
-                    Column(
-                        modifier =
+                if (!isGeneratingResponse) {
+                    items(retrievedContextList) { retrievedContext ->
+                        Column(
+                            modifier =
                             Modifier.padding(8.dp)
                                 .background(Color.Cyan, RoundedCornerShape(16.dp))
                                 .padding(16.dp)
                                 .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "\"${retrievedContext.context}\"",
-                            color = Color.Black,
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 12.sp,
-                            fontStyle = FontStyle.Italic
-                        )
-                        Text(
-                            text = retrievedContext.fileName,
-                            color = Color.Black,
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 10.sp
-                        )
+                        ) {
+                            Text(
+                                text = "\"${retrievedContext.context}\"",
+                                color = Color.Black,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 12.sp,
+                                fontStyle = FontStyle.Italic
+                            )
+                            Text(
+                                text = retrievedContext.fileName,
+                                color = Color.Black,
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = 10.sp
+                            )
+                        }
                     }
                 }
             }
@@ -200,6 +203,7 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
 private fun QueryInput(chatViewModel: ChatViewModel) {
     var questionText by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextField(
             modifier = Modifier.fillMaxWidth().weight(1f),
@@ -208,7 +212,7 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
             shape = RoundedCornerShape(16.dp),
             colors =
                 TextFieldDefaults.colors(
-                    focusedTextColor = Color.Blue,
+                    focusedTextColor = Color.Black,
                     disabledTextColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -220,6 +224,7 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
         IconButton(
             modifier = Modifier.background(Color.Blue, CircleShape),
             onClick = {
+                keyboardController?.hide()
                 if (!chatViewModel.qaUseCase.canGenerateAnswers()) {
                     Toast.makeText(context, "Add documents to execute queries", Toast.LENGTH_LONG)
                         .show()
