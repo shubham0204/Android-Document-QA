@@ -90,6 +90,10 @@ dependencies {
     // Gemini SDK - LLM
     implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
 
+    // compose-markdown
+    // https://github.com/jeziellago/compose-markdown
+    implementation("com.github.jeziellago:compose-markdown:0.5.0")
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)

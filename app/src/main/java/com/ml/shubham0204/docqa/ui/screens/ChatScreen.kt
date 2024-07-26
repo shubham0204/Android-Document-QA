@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
 import com.ml.shubham0204.docqa.ui.viewmodels.ChatViewModel
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,15 +126,18 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Column(
                             modifier =
-                            Modifier.background(Color.Blue, RoundedCornerShape(16.dp))
-                                .padding(24.dp)
-                                .fillMaxWidth()
+                                Modifier.background(Color.White, RoundedCornerShape(16.dp))
+                                    .padding(24.dp)
+                                    .fillMaxWidth()
                         ) {
-                            Text(
-                                text = response,
-                                color = Color.White,
+                            MarkdownText(
                                 modifier = Modifier.fillMaxWidth(),
-                                fontSize = 16.sp
+                                markdown = response,
+                                style =
+                                    TextStyle(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                    )
                             )
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -153,7 +158,7 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                                     Icon(
                                         imageVector = Icons.Default.Share,
                                         contentDescription = "Share the response",
-                                        tint = Color.White
+                                        tint = Color.Black
                                     )
                                 }
                             }
