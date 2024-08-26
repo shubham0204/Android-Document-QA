@@ -111,7 +111,11 @@ private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
     LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
         items(docs) { doc ->
             DocsListItem(
-                doc.copy(docText = doc.docText.substring(0,200)),
+                doc.copy(docText = if (doc.docText.length > 200) {
+                    doc.docText.substring(0,200) + " ..."
+                } else {
+                    doc.docText
+                }),
                 onRemoveDocClick = { docId -> docsViewModel.documentsUseCase.removeDocument(docId) }
             )
         }
