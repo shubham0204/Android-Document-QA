@@ -240,7 +240,8 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
                 chatViewModel.isGeneratingResponseState.value = true
                 chatViewModel.qaUseCase.getAnswer(
                     chatViewModel.questionState.value,
-                    context.getString(R.string.prompt_1)
+                    context.getString(R.string.prompt_1) ,
+                    useGemma = true
                 ) {
                     chatViewModel.isGeneratingResponseState.value = false
                     chatViewModel.responseState.value = it.response

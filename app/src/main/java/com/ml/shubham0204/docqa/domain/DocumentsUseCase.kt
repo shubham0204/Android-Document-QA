@@ -37,7 +37,7 @@ constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: D
                     )
                 )
             setProgressDialogText("Creating chunks...")
-            val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 500, chunkOverlap = 50)
+            val chunks = WhiteSpaceSplitter.createChunks(text, chunkSize = 120, chunkOverlap = 0)
             setProgressDialogText("Adding chunks to database...")
             val size = chunks.size
             chunks.forEachIndexed { index, s ->

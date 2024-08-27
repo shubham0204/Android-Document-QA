@@ -6,9 +6,13 @@
 Your job is to understand the request, and answer based on the retrieved context.
 
 Here is the retrieved context
+
 --------------------------------------------------
+
 $CONTEXT
+
 --------------------------------------------------
+
 Here is the user\'s query: $QUERY
     </string>
 </resources>

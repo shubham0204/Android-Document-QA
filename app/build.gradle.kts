@@ -94,6 +94,9 @@ dependencies {
     // https://github.com/jeziellago/compose-markdown
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
 
+    // Mediapipe LLM Inference
+    implementation("com.google.mediapipe:tasks-genai:0.10.14")
+
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
