@@ -2,7 +2,9 @@ package com.ml.shubham0204.docqa.domain.llm
 
 import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.Content
 import com.google.ai.client.generativeai.type.GenerationConfig
+import com.google.ai.client.generativeai.type.content
 import com.ml.shubham0204.docqa.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,7 +26,10 @@ class GeminiRemoteAPI {
             GenerativeModel(
                 modelName = "gemini-1.5-flash",
                 apiKey = apiKey,
-                generationConfig = configBuilder.build()
+                generationConfig = configBuilder.build(),
+                systemInstruction = content {
+                    text("You are an intelligent search engine. You will be provided with some retrieved context, as well as the users query. Your job is to understand the request, and answer based on the retrieved context.")
+                }
             )
     }
 
