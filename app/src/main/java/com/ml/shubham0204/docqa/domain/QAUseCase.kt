@@ -4,16 +4,13 @@ import android.util.Log
 import com.ml.shubham0204.docqa.data.QueryResult
 import com.ml.shubham0204.docqa.data.RetrievedContext
 import com.ml.shubham0204.docqa.domain.llm.GeminiRemoteAPI
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
-@Singleton
-class QAUseCase
-@Inject
-constructor(
+@Single
+class QAUseCase(
     private val documentsUseCase: DocumentsUseCase,
     private val chunksUseCase: ChunksUseCase,
     private val geminiRemoteAPI: GeminiRemoteAPI

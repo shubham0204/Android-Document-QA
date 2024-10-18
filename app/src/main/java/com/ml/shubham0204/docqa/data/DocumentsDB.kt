@@ -5,7 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import org.koin.core.annotation.Single
 
+@Single
 class DocumentsDB {
 
     private val docsBox = ObjectBoxStore.store.boxFor(Document::class.java)

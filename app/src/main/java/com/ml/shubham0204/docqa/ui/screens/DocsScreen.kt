@@ -50,7 +50,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ml.shubham0204.docqa.data.Document
 import com.ml.shubham0204.docqa.domain.readers.Readers
 import com.ml.shubham0204.docqa.ui.components.AppAlertDialog
@@ -62,6 +61,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.androidx.compose.koinViewModel
 import showProgressDialog
 
 private val showDocDetailDialog = mutableStateOf(false)
@@ -92,7 +92,7 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
                 )
             }
         ) { innerPadding ->
-            val docsViewModel: DocsViewModel = hiltViewModel()
+            val docsViewModel: DocsViewModel = koinViewModel()
             Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 DocsList(docsViewModel)

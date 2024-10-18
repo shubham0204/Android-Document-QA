@@ -5,7 +5,9 @@ import com.ml.shubham0204.sentence_embeddings.SentenceEmbedding
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import org.koin.core.annotation.Single
 
+@Single
 class SentenceEmbeddingProvider(private val context: Context) {
 
     private val sentenceEmbedding = SentenceEmbedding()
