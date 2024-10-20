@@ -47,11 +47,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
 import com.ml.shubham0204.docqa.ui.viewmodels.ChatViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +74,7 @@ fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
             }
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
-                val chatViewModel: ChatViewModel = hiltViewModel()
+                val chatViewModel: ChatViewModel = koinViewModel()
                 Column {
                     QALayout(chatViewModel)
                     Spacer(modifier = Modifier.height(8.dp))

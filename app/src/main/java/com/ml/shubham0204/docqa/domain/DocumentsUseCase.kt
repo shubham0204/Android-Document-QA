@@ -6,17 +6,17 @@ import com.ml.shubham0204.docqa.data.DocumentsDB
 import com.ml.shubham0204.docqa.domain.readers.Readers
 import com.ml.shubham0204.docqa.domain.splitters.WhiteSpaceSplitter
 import java.io.InputStream
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import setProgressDialogText
+import org.koin.core.annotation.Single
 
-@Singleton
-class DocumentsUseCase
-@Inject
-constructor(private val chunksUseCase: ChunksUseCase, private val documentsDB: DocumentsDB) {
+@Single
+class DocumentsUseCase(
+    private val chunksUseCase: ChunksUseCase,
+    private val documentsDB: DocumentsDB
+) {
 
     suspend fun addDocument(
         inputStream: InputStream,

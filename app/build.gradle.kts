@@ -4,8 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    kotlin("kapt")
-    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
 }
 
 val geminiKey: String = gradleLocalProperties(rootDir, providers).getProperty("geminiKey")
@@ -58,6 +57,17 @@ android {
             excludes += "META-INF/DEPENDENCIES"
         }
     }
+    applicationVariants.configureEach {
+        kotlin.sourceSets {
+            getByName(name) {
+                kotlin.srcDir("build/generated/ksp/$name/kotlin")
+            }
+        }
+    }
+}
+
+ksp {
+    arg("KOIN_CONFIG_CHECK","true")
 }
 
 dependencies {
@@ -94,9 +104,11 @@ dependencies {
     // https://github.com/jeziellago/compose-markdown
     implementation("com.github.jeziellago:compose-markdown:0.5.0")
 
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    // Koin dependency injection
+    implementation(libs.koin.android)
+    implementation(libs.koin.annotations)
+    implementation(libs.koin.androidx.compose)
+    ksp(libs.koin.ksp.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

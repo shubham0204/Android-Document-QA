@@ -4,13 +4,13 @@ import android.util.Log
 import com.ml.shubham0204.docqa.data.Chunk
 import com.ml.shubham0204.docqa.data.ChunksDB
 import com.ml.shubham0204.docqa.domain.embeddings.SentenceEmbeddingProvider
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.koin.core.annotation.Single
 
-@Singleton
-class ChunksUseCase
-@Inject
-constructor(private val chunksDB: ChunksDB, private val sentenceEncoder: SentenceEmbeddingProvider) {
+@Single
+class ChunksUseCase(
+    private val chunksDB: ChunksDB,
+    private val sentenceEncoder: SentenceEmbeddingProvider
+) {
 
     fun addChunk(docId: Long, docFileName: String, chunkText: String) {
         val embedding = sentenceEncoder.encodeText(chunkText)

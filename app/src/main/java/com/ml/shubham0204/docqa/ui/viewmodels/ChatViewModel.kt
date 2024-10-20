@@ -4,11 +4,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.ml.shubham0204.docqa.data.RetrievedContext
 import com.ml.shubham0204.docqa.domain.QAUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
+import org.koin.android.annotation.KoinViewModel
 
-@HiltViewModel
-class ChatViewModel @Inject constructor(val qaUseCase: QAUseCase) : ViewModel() {
+@KoinViewModel
+class ChatViewModel(val qaUseCase: QAUseCase) : ViewModel() {
 
     val questionState = mutableStateOf("")
     val responseState = mutableStateOf("")

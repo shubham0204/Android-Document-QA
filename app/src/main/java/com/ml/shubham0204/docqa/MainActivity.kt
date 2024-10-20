@@ -11,9 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ml.shubham0204.docqa.ui.screens.ChatScreen
 import com.ml.shubham0204.docqa.ui.screens.DocsScreen
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
