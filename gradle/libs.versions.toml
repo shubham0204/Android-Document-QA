@@ -1,5 +1,8 @@
 [versions]
 agp = "8.4.1"
+composeMarkdown = "0.5.0"
+generativeai = "0.9.0"
+itextpdf = "5.5.13.3"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -8,15 +11,21 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.8.0"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
-navigationComposeVersion = "2.7.7"
+navigationComposeVersion = "2.8.5"
+objectboxAndroid = "4.0.3"
+objectboxAndroidObjectbrowser = "4.0.0"
 objectboxGradlePlugin = "4.0.0"
 pdfboxVersion = "2.0.0"
 apachePoi = "5.2.5"
 koin = "3.5.6"
 koinAnnotations = "1.3.1"
+sentenceEmbeddingsAndroid = "0.0.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
+generativeai = { module = "com.google.ai.client.generativeai:generativeai", version.ref = "generativeai" }
+itextpdf = { module = "com.itextpdf:itextpdf", version.ref = "itextpdf" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -41,6 +50,9 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
 koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotations" }
+objectbox-android = { module = "io.objectbox:objectbox-android", version.ref = "objectboxAndroid" }
+objectbox-android-objectbrowser = { module = "io.objectbox:objectbox-android-objectbrowser", version.ref = "objectboxAndroidObjectbrowser" }
+sentence-embeddings-android = { module = "com.github.shubham0204:Sentence-Embeddings-Android", version.ref = "sentenceEmbeddingsAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

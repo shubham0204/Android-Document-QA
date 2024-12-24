@@ -88,21 +88,21 @@ dependencies {
 
     // Sentence Embeddings
     // https://github.com/shubham0204/Sentence-Embeddings-Android
-    implementation("com.github.shubham0204:Sentence-Embeddings-Android:0.0.3")
+    implementation(libs.sentence.embeddings.android)
 
     // iTextPDF - for parsing PDFs
-    implementation("com.itextpdf:itextpdf:5.5.13.3")
+    implementation(libs.itextpdf)
 
     // ObjectBox - vector database
-    debugImplementation("io.objectbox:objectbox-android-objectbrowser:4.0.0")
-    releaseImplementation("io.objectbox:objectbox-android:4.0.3")
+    debugImplementation(libs.objectbox.android.objectbrowser)
+    releaseImplementation(libs.objectbox.android)
 
     // Gemini SDK - LLM
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation(libs.generativeai)
 
     // compose-markdown
     // https://github.com/jeziellago/compose-markdown
-    implementation("com.github.jeziellago:compose-markdown:0.5.0")
+    implementation(libs.compose.markdown)
 
     // Koin dependency injection
     implementation(libs.koin.android)

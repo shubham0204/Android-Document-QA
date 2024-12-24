@@ -1,5 +1,6 @@
 package com.ml.shubham0204.docqa.ui.screens.docs
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.ml.shubham0204.docqa.data.Chunk
 import com.ml.shubham0204.docqa.data.ChunksDB
@@ -13,7 +14,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import org.koin.android.annotation.KoinViewModel
 import setProgressDialogText
+import java.io.File
 import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 @KoinViewModel
 class DocsViewModel(
@@ -52,6 +56,38 @@ class DocsViewModel(
                     chunkEmbedding = embedding,
                 ),
             )
+        }
+    }
+
+    suspend fun addDocumentFromUrl(url: String, context: Context, callback: (Boolean) -> Unit) = withContext(Dispatchers.IO){
+        try {
+            val connection = URL(url).openConnection() as HttpURLConnection
+            connection.connect()
+            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val inputStream = connection.inputStream
+                val fileName = url.substringAfterLast("/")
+                val file = File(context.cacheDir, fileName)
+
+                file.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+
+                // Pass file to your document handling logic
+                addDocument(file.inputStream(), fileName, Readers.DocumentType.PDF)
+
+                withContext(Dispatchers.Main) {
+                    callback(true)
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    callback(false)
+                }
+            }
+        } catch (e: Exception){
+            e.printStackTrace()
+            withContext(Dispatchers.Main){
+                callback(false)
+            }
         }
     }
 
