@@ -4,14 +4,16 @@ import org.koin.core.annotation.Single
 
 @Single
 class ChunksDB {
-
     private val chunksBox = ObjectBoxStore.store.boxFor(Chunk::class.java)
 
     fun addChunk(chunk: Chunk) {
         chunksBox.put(chunk)
     }
 
-    fun getSimilarChunks(queryEmbedding: FloatArray, n: Int = 5): List<Pair<Float, Chunk>> {
+    fun getSimilarChunks(
+        queryEmbedding: FloatArray,
+        n: Int = 5,
+    ): List<Pair<Float, Chunk>> {
         /*
         Use maxResultCount to set the maximum number of objects to return by the ANN condition.
         Hint: it can also be used as the "ef" HNSW parameter to increase the search quality in combination
@@ -28,6 +30,12 @@ class ChunksDB {
     }
 
     fun removeChunks(docId: Long) {
-        chunksBox.removeByIds(chunksBox.query(Chunk_.docId.equal(docId)).build().findIds().toList())
+        chunksBox.removeByIds(
+            chunksBox
+                .query(Chunk_.docId.equal(docId))
+                .build()
+                .findIds()
+                .toList(),
+        )
     }
 }

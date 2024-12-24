@@ -1,4 +1,4 @@
-package com.ml.shubham0204.docqa.ui.screens
+package com.ml.shubham0204.docqa.ui.screens.docs
 
 import AppProgressDialog
 import android.content.Intent
@@ -55,7 +55,6 @@ import com.ml.shubham0204.docqa.domain.readers.Readers
 import com.ml.shubham0204.docqa.ui.components.AppAlertDialog
 import com.ml.shubham0204.docqa.ui.components.createAlertDialog
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
-import com.ml.shubham0204.docqa.ui.viewmodels.DocsViewModel
 import hideProgressDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,19 +77,19 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
                     title = {
                         Text(
                             text = "Manage Documents",
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.headlineSmall,
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = onBackClick) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Navigate Back"
+                                contentDescription = "Navigate Back",
                             )
                         }
-                    }
+                    },
                 )
-            }
+            },
         ) { innerPadding ->
             val docsViewModel: DocsViewModel = koinViewModel()
             Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
@@ -107,51 +106,57 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
 
 @Composable
 private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
-    val docs by docsViewModel.documentsFlow.collectAsState(emptyList())
+    val docs by docsViewModel.getAllDocuments().collectAsState(emptyList())
     LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
         items(docs) { doc ->
             DocsListItem(
-                doc.copy(docText = if (doc.docText.length > 200) {
-                    doc.docText.substring(0,200) + " ..."
-                } else {
-                    doc.docText
-                }),
-                onRemoveDocClick = { docId -> docsViewModel.documentsUseCase.removeDocument(docId) }
+                doc.copy(
+                    docText =
+                        if (doc.docText.length > 200) {
+                            doc.docText.substring(0, 200) + " ..."
+                        } else {
+                            doc.docText
+                        },
+                ),
+                onRemoveDocClick = { docId -> docsViewModel.removeDocument(docId) },
             )
         }
     }
 }
 
 @Composable
-private fun DocsListItem(document: Document, onRemoveDocClick: ((Long) -> Unit)) {
+private fun DocsListItem(
+    document: Document,
+    onRemoveDocClick: ((Long) -> Unit),
+) {
     Row(
         modifier =
-            Modifier.fillMaxWidth()
+            Modifier
+                .fillMaxWidth()
                 .clickable {
                     dialogDoc.value = document
                     showDocDetailDialog.value = true
-                }
-                .background(Color.White)
+                }.background(Color.White)
                 .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.fillMaxWidth().weight(1f)) {
             Text(
                 text = document.docFileName,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = document.docText.trim().replace("\n", ""),
                 style = MaterialTheme.typography.bodySmall,
-                maxLines = 1
+                maxLines = 1,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = DateUtils.getRelativeTimeSpanString(document.docAddedTime).toString(),
                 style = MaterialTheme.typography.labelSmall,
-                color = Color.DarkGray
+                color = Color.DarkGray,
             )
         }
         Icon(
@@ -165,11 +170,11 @@ private fun DocsListItem(document: Document, onRemoveDocClick: ((Long) -> Unit))
                         dialogPositiveButtonText = "Remove",
                         onPositiveButtonClick = { onRemoveDocClick(document.docId) },
                         dialogNegativeButtonText = "Cancel",
-                        onNegativeButtonClick = {}
+                        onNegativeButtonClick = {},
                     )
                 },
             imageVector = Icons.Default.Clear,
-            contentDescription = "Remove this document"
+            contentDescription = "Remove this document",
         )
         Spacer(modifier = Modifier.width(2.dp))
     }
@@ -183,7 +188,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
     var docType = Readers.DocumentType.PDF
     val launcher =
         rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
+            contract = ActivityResultContracts.StartActivityForResult(),
         ) {
             it.data?.data?.let { uri ->
                 var docFileName = ""
@@ -198,10 +203,10 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 context.contentResolver.openInputStream(uri)?.let { inputStream ->
                     showProgressDialog()
                     CoroutineScope(Dispatchers.IO).launch {
-                        docsViewModel.documentsUseCase.addDocument(
+                        docsViewModel.addDocument(
                             inputStream,
                             docFileName,
-                            docType
+                            docType,
                         )
                         withContext(Dispatchers.Main) {
                             hideProgressDialog()
@@ -214,16 +219,16 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
 
     Row(
         modifier = Modifier.padding(24.dp).fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         Button(
             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
             onClick = {
                 docType = Readers.DocumentType.PDF
                 launcher.launch(
-                    Intent(Intent.ACTION_GET_CONTENT).apply { type = "application/pdf" }
+                    Intent(Intent.ACTION_GET_CONTENT).apply { type = "application/pdf" },
                 )
-            }
+            },
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add PDF document")
             Text(text = "PDF")
@@ -236,9 +241,9 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                     Intent(Intent.ACTION_GET_CONTENT).apply {
                         type =
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    }
+                    },
                 )
-            }
+            },
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add DOCX document")
             Text(text = "DOCX")
@@ -256,24 +261,25 @@ private fun DocDetailDialog() {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier =
-                    Modifier.fillMaxWidth()
+                    Modifier
+                        .fillMaxWidth()
                         .background(Color.White, shape = RoundedCornerShape(8.dp))
-                        .padding(24.dp)
+                        .padding(24.dp),
             ) {
                 Column(horizontalAlignment = Alignment.Start) {
                     Text(
                         text = doc?.docFileName ?: "",
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineSmall,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = doc?.docText ?: "",
-                        modifier = Modifier.height(200.dp).verticalScroll(rememberScrollState())
+                        modifier = Modifier.height(200.dp).verticalScroll(rememberScrollState()),
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
@@ -286,13 +292,13 @@ private fun DocDetailDialog() {
                                     }
                                 val shareIntent = Intent.createChooser(sendIntent, null)
                                 context.startActivity(shareIntent)
-                            }
+                            },
                         ) {
                             Text(text = "Share Text")
                         }
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                            onClick = { isVisible = false }
+                            onClick = { isVisible = false },
                         ) {
                             Text(text = "Close")
                         }

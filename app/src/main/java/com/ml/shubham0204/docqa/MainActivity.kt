@@ -9,11 +9,10 @@ import androidx.compose.animation.fadeOut
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.ml.shubham0204.docqa.ui.screens.ChatScreen
-import com.ml.shubham0204.docqa.ui.screens.DocsScreen
+import com.ml.shubham0204.docqa.ui.screens.chat.ChatScreen
+import com.ml.shubham0204.docqa.ui.screens.docs.DocsScreen
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 navController = navHostController,
                 startDestination = "chat",
                 enterTransition = { fadeIn() },
-                exitTransition = { fadeOut() }
+                exitTransition = { fadeOut() },
             ) {
                 composable("docs") { DocsScreen(onBackClick = { navHostController.navigateUp() }) }
                 composable("chat") {
