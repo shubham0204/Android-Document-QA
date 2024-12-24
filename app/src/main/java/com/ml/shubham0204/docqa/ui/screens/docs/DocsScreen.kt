@@ -4,8 +4,10 @@ import AppProgressDialog
 import android.content.Intent
 import android.provider.OpenableColumns
 import android.text.format.DateUtils
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -186,6 +191,8 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
     // Intent to get file from user's device
     // See https://developer.android.com/guide/components/intents-common#GetFile
     var docType = Readers.DocumentType.PDF
+    var pdfUrl by remember { mutableStateOf("") }
+    var showUrlDialog by remember { mutableStateOf(false) }
     val launcher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult(),
@@ -217,12 +224,14 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
             }
         }
 
-    Row(
+    Column(
         modifier = Modifier.padding(24.dp).fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
+
+        // Upload PDF from device
         Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6650a4)),
             onClick = {
                 docType = Readers.DocumentType.PDF
                 launcher.launch(
@@ -230,11 +239,14 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 )
             },
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add PDF document")
-            Text(text = "PDF")
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add PDF document", tint = Color.White)
+            Text(text = "PDF", color = Color.White)
+
         }
+
+        // Upload DOCX from device
         Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF625b71)),
             onClick = {
                 docType = Readers.DocumentType.MS_DOCX
                 launcher.launch(
@@ -245,9 +257,64 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 )
             },
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add DOCX document")
-            Text(text = "DOCX")
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add DOCX document", tint = Color.White)
+            Text(text = "DOCX", color = Color.White)
         }
+
+        // Add from URL
+        Button(
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C698D)),
+            onClick = { showUrlDialog = true }
+        ) {
+            Icon(imageVector = Icons.Default.Link, contentDescription = "Add PDF from URL", tint = Color.White)
+            Text(text = "Doc URL", color = Color.White)
+        }
+    }
+
+    // URL Dialog
+    if(showUrlDialog){
+        AlertDialog(
+            onDismissRequest = {
+                showUrlDialog = false
+                pdfUrl = ""
+            },
+            title = {
+                Text("Add PDF from URL", style = MaterialTheme.typography.titleMedium)},
+            text = {
+                Column {
+                    TextField(
+                        value = pdfUrl,
+                        onValueChange = {pdfUrl = it},
+                        label = {Text("Enter URL")}
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    if(pdfUrl.isNotBlank()){
+                        showProgressDialog()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            docsViewModel.addDocumentFromUrl(pdfUrl, context){ success ->
+                                hideProgressDialog()
+                                if (success){
+                                    Toast.makeText(context, "PDF added from source", Toast.LENGTH_SHORT).show()
+                                }else{
+                                    Toast.makeText(context, "Failed to download", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            showUrlDialog = false
+                        }
+                    }
+                }){
+                    Text("Add")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showUrlDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
