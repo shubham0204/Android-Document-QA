@@ -11,7 +11,7 @@ data class Chunk(
     @Index var docId: Long = 0,
     var docFileName: String = "",
     var chunkData: String = "",
-    @HnswIndex(dimensions = 384) var chunkEmbedding: FloatArray = floatArrayOf()
+    @HnswIndex(dimensions = 384) var chunkEmbedding: FloatArray = floatArrayOf(),
 )
 
 @Entity
@@ -22,6 +22,7 @@ data class Document(
     var docAddedTime: Long = 0,
 )
 
-data class RetrievedContext(val fileName: String, val context: String)
-
-data class QueryResult(val response: String, val context: List<RetrievedContext>)
+data class RetrievedContext(
+    val fileName: String,
+    val context: String,
+)

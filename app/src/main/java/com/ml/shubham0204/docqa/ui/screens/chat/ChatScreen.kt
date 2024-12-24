@@ -1,4 +1,4 @@
-package com.ml.shubham0204.docqa.ui.screens
+package com.ml.shubham0204.docqa.ui.screens.chat
 
 import android.content.Intent
 import android.widget.Toast
@@ -34,6 +34,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
-import com.ml.shubham0204.docqa.ui.viewmodels.ChatViewModel
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import org.koin.androidx.compose.koinViewModel
 
@@ -66,12 +66,12 @@ fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
                         IconButton(onClick = onOpenDocsClick) {
                             Icon(
                                 imageVector = Icons.Default.Folder,
-                                contentDescription = "Open Documents"
+                                contentDescription = "Open Documents",
                             )
                         }
-                    }
+                    },
                 )
-            }
+            },
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
                 val chatViewModel: ChatViewModel = koinViewModel()
@@ -87,10 +87,10 @@ fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
 
 @Composable
 private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
-    val question by remember { chatViewModel.questionState }
-    val response by remember { chatViewModel.responseState }
-    val isGeneratingResponse by remember { chatViewModel.isGeneratingResponseState }
-    val retrievedContextList by remember { chatViewModel.retrievedContextListState }
+    val question by chatViewModel.questionState.collectAsState()
+    val response by chatViewModel.responseState.collectAsState()
+    val isGeneratingResponse by chatViewModel.isGeneratingResponseState.collectAsState()
+    val retrievedContextList by chatViewModel.retrievedContextListState.collectAsState()
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize().weight(1f),
@@ -99,18 +99,18 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
             Column(
                 modifier = Modifier.fillMaxSize().align(Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
                     modifier = Modifier.size(75.dp),
                     imageVector = Icons.Default.Search,
                     contentDescription = null,
-                    tint = Color.LightGray
+                    tint = Color.LightGray,
                 )
                 Text(
                     text = "Enter a query to see answers",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.LightGray
+                    color = Color.LightGray,
                 )
             }
         } else {
@@ -127,9 +127,10 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Column(
                             modifier =
-                                Modifier.background(Color.White, RoundedCornerShape(16.dp))
+                                Modifier
+                                    .background(Color.White, RoundedCornerShape(16.dp))
                                     .padding(24.dp)
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
                         ) {
                             MarkdownText(
                                 modifier = Modifier.fillMaxWidth(),
@@ -138,11 +139,11 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                                     TextStyle(
                                         color = Color.Black,
                                         fontSize = 14.sp,
-                                    )
+                                    ),
                             )
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                                horizontalArrangement = Arrangement.End,
                             ) {
                                 IconButton(
                                     onClick = {
@@ -154,12 +155,12 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                                             }
                                         val shareIntent = Intent.createChooser(sendIntent, null)
                                         context.startActivity(shareIntent)
-                                    }
+                                    },
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Share,
                                         contentDescription = "Share the response",
-                                        tint = Color.Black
+                                        tint = Color.Black,
                                     )
                                 }
                             }
@@ -173,23 +174,24 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                     items(retrievedContextList) { retrievedContext ->
                         Column(
                             modifier =
-                            Modifier.padding(8.dp)
-                                .background(Color.Cyan, RoundedCornerShape(16.dp))
-                                .padding(16.dp)
-                                .fillMaxWidth()
+                                Modifier
+                                    .padding(8.dp)
+                                    .background(Color.Cyan, RoundedCornerShape(16.dp))
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
                         ) {
                             Text(
                                 text = "\"${retrievedContext.context}\"",
                                 color = Color.Black,
                                 modifier = Modifier.fillMaxWidth(),
                                 fontSize = 12.sp,
-                                fontStyle = FontStyle.Italic
+                                fontStyle = FontStyle.Italic,
                             )
                             Text(
                                 text = retrievedContext.fileName,
                                 color = Color.Black,
                                 modifier = Modifier.fillMaxWidth(),
-                                fontSize = 10.sp
+                                fontSize = 10.sp,
                             )
                         }
                     }
@@ -216,17 +218,18 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
                     disabledTextColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
+                    disabledIndicatorColor = Color.Transparent,
                 ),
-            placeholder = { Text(text = "Ask documents...") }
+            placeholder = { Text(text = "Ask documents...") },
         )
         Spacer(modifier = Modifier.width(8.dp))
         IconButton(
             modifier = Modifier.background(Color.Blue, CircleShape),
             onClick = {
                 keyboardController?.hide()
-                if (!chatViewModel.qaUseCase.canGenerateAnswers()) {
-                    Toast.makeText(context, "Add documents to execute queries", Toast.LENGTH_LONG)
+                if (!chatViewModel.canGenerateAnswers()) {
+                    Toast
+                        .makeText(context, "Add documents to execute queries", Toast.LENGTH_LONG)
                         .show()
                     return@IconButton
                 }
@@ -235,23 +238,16 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
                     return@IconButton
                 }
 
-                chatViewModel.questionState.value = questionText
-                questionText = ""
-                chatViewModel.isGeneratingResponseState.value = true
-                chatViewModel.qaUseCase.getAnswer(
-                    chatViewModel.questionState.value,
-                    context.getString(R.string.prompt_1)
-                ) {
-                    chatViewModel.isGeneratingResponseState.value = false
-                    chatViewModel.responseState.value = it.response
-                    chatViewModel.retrievedContextListState.value = it.context
-                }
-            }
+                chatViewModel.getAnswer(
+                    questionText,
+                    context.getString(R.string.prompt_1),
+                )
+            },
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Send query",
-                tint = Color.White
+                tint = Color.White,
             )
         }
     }

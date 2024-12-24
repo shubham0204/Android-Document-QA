@@ -33,12 +33,12 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
-            buildConfigField( "String" , "geminiKey" , geminiKey)
+            buildConfigField("String", "geminiKey", geminiKey)
         }
         debug {
-            buildConfigField( "String" , "geminiKey" , geminiKey)
+            buildConfigField("String", "geminiKey", geminiKey)
         }
     }
     compileOptions {
@@ -67,7 +67,7 @@ android {
 }
 
 ksp {
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 dependencies {
@@ -95,10 +95,10 @@ dependencies {
 
     // ObjectBox - vector database
     debugImplementation("io.objectbox:objectbox-android-objectbrowser:4.0.0")
-    releaseImplementation("io.objectbox:objectbox-android:4.0.0")
+    releaseImplementation("io.objectbox:objectbox-android:4.0.3")
 
     // Gemini SDK - LLM
-    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
     // compose-markdown
     // https://github.com/jeziellago/compose-markdown
