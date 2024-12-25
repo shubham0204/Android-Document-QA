@@ -59,7 +59,7 @@ class DocsViewModel(
         }
     }
 
-    suspend fun addDocumentFromUrl(url: String, context: Context, callback: (Boolean) -> Unit) = withContext(Dispatchers.IO){
+    suspend fun addDocumentFromUrl(url: String, context: Context, onDownloadComplete: (Boolean) -> Unit) = withContext(Dispatchers.IO){
         try {
             val connection = URL(url).openConnection() as HttpURLConnection
             connection.connect()
@@ -72,21 +72,29 @@ class DocsViewModel(
                     inputStream.copyTo(outputStream)
                 }
 
+                // Determine the document type based on the file extension
+                // Add handle for unknown types if supported
+                val documentType = when (fileName.substringAfterLast(".", "").lowercase()) {
+                    "pdf" -> Readers.DocumentType.PDF
+                    "docx" -> Readers.DocumentType.MS_DOCX
+                    else -> Readers.DocumentType.UNKNOWN
+                }
+
                 // Pass file to your document handling logic
-                addDocument(file.inputStream(), fileName, Readers.DocumentType.PDF)
+                addDocument(file.inputStream(), fileName, documentType)
 
                 withContext(Dispatchers.Main) {
-                    callback(true)
+                    onDownloadComplete(true)
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    callback(false)
+                    onDownloadComplete(false)
                 }
             }
         } catch (e: Exception){
             e.printStackTrace()
             withContext(Dispatchers.Main){
-                callback(false)
+                onDownloadComplete(false)
             }
         }
     }

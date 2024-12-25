@@ -7,7 +7,6 @@ import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -50,9 +50,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.ml.shubham0204.docqa.data.Document
@@ -149,12 +151,14 @@ private fun DocsListItem(
             Text(
                 text = document.docFileName,
                 style = MaterialTheme.typography.bodyLarge,
+                color = Color.DarkGray,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = document.docText.trim().replace("\n", ""),
                 style = MaterialTheme.typography.bodySmall,
+                color = Color.DarkGray,
                 maxLines = 1,
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -179,6 +183,7 @@ private fun DocsListItem(
                     )
                 },
             imageVector = Icons.Default.Clear,
+            tint = Color.DarkGray,
             contentDescription = "Remove this document",
         )
         Spacer(modifier = Modifier.width(2.dp))
@@ -215,7 +220,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                             docFileName,
                             docType,
                         )
-                        withContext(Dispatchers.Main) {
+                        withContext(Dispatchers.IO) {
                             hideProgressDialog()
                             inputStream.close()
                         }
@@ -224,9 +229,9 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
             }
         }
 
-    Column(
+    Row(
         modifier = Modifier.padding(24.dp).fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
 
         // Upload PDF from device
@@ -246,7 +251,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
 
         // Upload DOCX from device
         Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF625b71)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBB94C7)),
             onClick = {
                 docType = Readers.DocumentType.MS_DOCX
                 launcher.launch(
@@ -263,11 +268,11 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
 
         // Add from URL
         Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6C698D)),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF643A71)),
             onClick = { showUrlDialog = true }
         ) {
-            Icon(imageVector = Icons.Default.Link, contentDescription = "Add PDF from URL", tint = Color.White)
-            Text(text = "Doc URL", color = Color.White)
+            Icon(imageVector = Icons.Default.Link, contentDescription = "Add document from URL", tint = Color.White, modifier = Modifier.rotate(45f))
+            Text(text = "URL", color = Color.White)
         }
     }
 
@@ -283,9 +288,11 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
             text = {
                 Column {
                     TextField(
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                         value = pdfUrl,
                         onValueChange = {pdfUrl = it},
-                        label = {Text("Enter URL")}
+                        label = {Text("Enter URL")
+                        }
                     )
                 }
             },
