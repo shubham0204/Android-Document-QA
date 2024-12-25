@@ -1,10 +1,13 @@
 package com.ml.shubham0204.docqa.domain.readers
 
+import android.widget.Toast
+
 class Readers {
 
     enum class DocumentType {
         PDF,
-        MS_DOCX
+        MS_DOCX,
+        UNKNOWN
     }
 
     companion object {
@@ -13,6 +16,7 @@ class Readers {
             return when (docType) {
                 DocumentType.PDF -> PDFReader()
                 DocumentType.MS_DOCX -> DOCXReader()
+                DocumentType.UNKNOWN -> throw IllegalArgumentException("Unsupported document type.")
             }
         }
     }
