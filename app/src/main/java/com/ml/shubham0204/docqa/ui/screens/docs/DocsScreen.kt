@@ -99,7 +99,7 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
             },
         ) { innerPadding ->
             val docsViewModel: DocsViewModel = koinViewModel()
-            Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
+            Column(modifier = Modifier.padding(innerPadding).fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 DocsList(docsViewModel)
                 DocOperations(docsViewModel)
@@ -230,12 +230,11 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
         }
 
     Row(
-        modifier = Modifier.padding(24.dp).fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp).fillMaxWidth(),
     ) {
-
         // Upload PDF from device
         Button(
+            modifier = Modifier.weight(1f).padding(2.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6650a4)),
             onClick = {
                 docType = Readers.DocumentType.PDF
@@ -246,11 +245,11 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add PDF document", tint = Color.White)
             Text(text = "PDF", color = Color.White)
-
         }
 
         // Upload DOCX from device
         Button(
+            modifier = Modifier.weight(1f).padding(2.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBB94C7)),
             onClick = {
                 docType = Readers.DocumentType.MS_DOCX
@@ -268,51 +267,64 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
 
         // Add from URL
         Button(
+            modifier = Modifier.weight(1f).padding(2.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF643A71)),
-            onClick = { showUrlDialog = true }
+            onClick = { showUrlDialog = true },
         ) {
-            Icon(imageVector = Icons.Default.Link, contentDescription = "Add document from URL", tint = Color.White, modifier = Modifier.rotate(45f))
+            Icon(
+                imageVector = Icons.Default.Link,
+                contentDescription = "Add document from URL",
+                tint = Color.White,
+                modifier = Modifier.rotate(45f),
+            )
             Text(text = "URL", color = Color.White)
         }
     }
 
     // URL Dialog
-    if(showUrlDialog){
+    if (showUrlDialog) {
         AlertDialog(
             onDismissRequest = {
                 showUrlDialog = false
                 pdfUrl = ""
             },
             title = {
-                Text("Add PDF from URL", style = MaterialTheme.typography.titleMedium)},
+                Column {
+                    Text("Add document from URL", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "The app will determine the type of the document using the file-extension of the downloaded " +
+                            "document",
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
+            },
             text = {
                 Column {
                     TextField(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                         value = pdfUrl,
-                        onValueChange = {pdfUrl = it},
-                        label = {Text("Enter URL")
-                        }
+                        onValueChange = { pdfUrl = it },
+                        label = { Text("Enter URL") },
                     )
                 }
             },
             confirmButton = {
                 Button(onClick = {
-                    if(pdfUrl.isNotBlank()){
+                    if (pdfUrl.isNotBlank()) {
                         showProgressDialog()
                         CoroutineScope(Dispatchers.IO).launch {
-                            docsViewModel.addDocumentFromUrl(pdfUrl, context){ success ->
+                            docsViewModel.addDocumentFromUrl(pdfUrl, context) { success ->
                                 hideProgressDialog()
-                                if (success){
+                                if (success) {
                                     Toast.makeText(context, "PDF added from source", Toast.LENGTH_SHORT).show()
-                                }else{
+                                } else {
                                     Toast.makeText(context, "Failed to download", Toast.LENGTH_SHORT).show()
                                 }
                             }
                             showUrlDialog = false
                         }
                     }
-                }){
+                }) {
                     Text("Add")
                 }
             },
@@ -320,7 +332,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 Button(onClick = { showUrlDialog = false }) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 }
