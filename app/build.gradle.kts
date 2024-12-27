@@ -18,14 +18,21 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
     }
-
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore.jks")
+            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("RELEASE_KEYSTORE_ALIAS")
+            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+        }
+    }
     buildTypes {
         // Add the field 'geminiKey' in the build config
         // See https://stackoverflow.com/a/60474096/13546426
@@ -36,6 +43,7 @@ android {
                 "proguard-rules.pro",
             )
             buildConfigField("String", "geminiKey", geminiKey)
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             buildConfigField("String", "geminiKey", geminiKey)
