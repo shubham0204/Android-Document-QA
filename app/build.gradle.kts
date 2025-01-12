@@ -1,13 +1,9 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
 }
-
-val geminiKey: String = gradleLocalProperties(rootDir, providers).getProperty("geminiKey")
 
 android {
     namespace = "com.ml.shubham0204.docqa"
@@ -42,11 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            buildConfigField("String", "geminiKey", geminiKey)
             signingConfig = signingConfigs.getByName("release")
-        }
-        debug {
-            buildConfigField("String", "geminiKey", geminiKey)
         }
     }
     compileOptions {
