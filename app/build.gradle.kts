@@ -110,6 +110,9 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     ksp(libs.koin.ksp.compiler)
 
+    // For secured/encrypted shared preferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
