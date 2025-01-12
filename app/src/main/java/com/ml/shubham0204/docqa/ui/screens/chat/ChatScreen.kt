@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,14 +49,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.ml.shubham0204.docqa.R
+import com.ml.shubham0204.docqa.ui.components.AppAlertDialog
+import com.ml.shubham0204.docqa.ui.components.createAlertDialog
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
+fun ChatScreen(
+    onOpenDocsClick: (() -> Unit),
+    onEditAPIKeyClick: (() -> Unit),
+) {
     DocQATheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -69,6 +76,12 @@ fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
                                 contentDescription = "Open Documents",
                             )
                         }
+                        IconButton(onClick = onEditAPIKeyClick) {
+                            Icon(
+                                imageVector = Icons.Default.Key,
+                                contentDescription = "Edit API Key",
+                            )
+                        }
                     },
                 )
             },
@@ -78,9 +91,10 @@ fun ChatScreen(onOpenDocsClick: (() -> Unit)) {
                 Column {
                     QALayout(chatViewModel)
                     Spacer(modifier = Modifier.height(8.dp))
-                    QueryInput(chatViewModel)
+                    QueryInput(chatViewModel, onEditAPIKeyClick)
                 }
             }
+            AppAlertDialog()
         }
     }
 }
@@ -202,7 +216,10 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
 }
 
 @Composable
-private fun QueryInput(chatViewModel: ChatViewModel) {
+private fun QueryInput(
+    chatViewModel: ChatViewModel,
+    onEditAPIKeyClick: () -> Unit,
+) {
     var questionText by remember { mutableStateOf("") }
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -227,21 +244,47 @@ private fun QueryInput(chatViewModel: ChatViewModel) {
             modifier = Modifier.background(Color.Blue, CircleShape),
             onClick = {
                 keyboardController?.hide()
-                if (!chatViewModel.canGenerateAnswers()) {
+                if (!chatViewModel.checkNumDocuments()) {
                     Toast
                         .makeText(context, "Add documents to execute queries", Toast.LENGTH_LONG)
                         .show()
+                    return@IconButton
+                }
+                if (!chatViewModel.checkValidAPIKey()) {
+                    createAlertDialog(
+                        dialogTitle = "Invalid API Key",
+                        dialogText = "Please enter a Gemini API key to use a LLM for generating responses.",
+                        dialogPositiveButtonText = "Add API key",
+                        onPositiveButtonClick = onEditAPIKeyClick,
+                        dialogNegativeButtonText = "Open Gemini Console",
+                        onNegativeButtonClick = {
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = "https://aistudio.google.com/apikey".toUri()
+                                context.startActivity(this)
+                            }
+                        },
+                    )
                     return@IconButton
                 }
                 if (questionText.trim().isEmpty()) {
                     Toast.makeText(context, "Enter a query to execute", Toast.LENGTH_LONG).show()
                     return@IconButton
                 }
-
-                chatViewModel.getAnswer(
-                    questionText,
-                    context.getString(R.string.prompt_1),
-                )
+                try {
+                    chatViewModel.getAnswer(
+                        questionText,
+                        context.getString(R.string.prompt_1),
+                    )
+                } catch (e: Exception) {
+                    createAlertDialog(
+                        dialogTitle = "Error",
+                        dialogText = "An error occurred while generating the response: ${e.message}",
+                        dialogPositiveButtonText = "Close",
+                        onPositiveButtonClick = {},
+                        dialogNegativeButtonText = null,
+                        onNegativeButtonClick = {},
+                    )
+                }
             },
         ) {
             Icon(
