@@ -30,12 +30,12 @@ https://github.com/shubham0204/Android-Document-QA/assets/41076823/d4d6a21c-a29e
 $> git clone --depth=1 https://github.com/shubham0204/Android-Document-QA
 ```
 
-2. [Get an API key from Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key) to use the Gemini API. Copy 
-the key and paste it in `local.properties` present in the root directory of the project,
+2. Open the resulting directory in Android Studio. A project build is initiated automatically, if not, run `./gradlew :app:build` in the terminal.
 
-```
-geminiKey="AIza[API_KEY_HERE]"
-```
+3. [Get an API key from Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key) to use the Gemini API.
+
+4. [Run the app](https://developer.android.com/studio/run) on a physical device or a emulator. Tap on the '🔑' icon to add the API key.
+
 
 Perform a Gradle sync, and run the application. 
 

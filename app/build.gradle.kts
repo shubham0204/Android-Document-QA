@@ -30,8 +30,6 @@ android {
         }
     }
     buildTypes {
-        // Add the field 'geminiKey' in the build config
-        // See https://stackoverflow.com/a/60474096/13546426
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -50,7 +48,6 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true
     }
     packaging {
         resources {
