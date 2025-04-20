@@ -88,7 +88,8 @@ dependencies {
 
     // Sentence Embeddings
     // https://github.com/shubham0204/Sentence-Embeddings-Android
-    implementation(libs.sentence.embeddings.android)
+    implementation(files("libs/sentence_embeddings.aar"))
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
 
     // iTextPDF - for parsing PDFs
     implementation(libs.itextpdf)
