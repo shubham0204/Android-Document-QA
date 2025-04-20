@@ -33,12 +33,19 @@ class SentenceEmbeddingProvider(
             return@runBlocking sentenceEmbedding.encode(text)
         }
 
+    // Copies the file from the assets folder to the app's internal
+    // storage. Files stored in the assets folder are not accessible with
+    // a `File` object that makes handling difficult.
     private fun copyToLocalStorage(filename: String): File {
-        val tokenizerBytes = context.assets.open(filename).readBytes()
         val storageFile = File(context.filesDir, filename)
         if (!storageFile.exists()) {
-            storageFile.writeBytes(tokenizerBytes)
+            val tokenizerBytes = context.assets.open(filename).readBytes()
+            if (!storageFile.exists()) {
+                storageFile.writeBytes(tokenizerBytes)
+            }
+            return storageFile
+        } else {
+            return storageFile
         }
-        return storageFile
     }
 }
