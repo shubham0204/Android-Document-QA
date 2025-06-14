@@ -2,7 +2,6 @@ package com.ml.shubham0204.docqa.ui.screens.docs
 
 import AppProgressDialog
 import android.content.Intent
-import android.provider.OpenableColumns
 import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -43,7 +42,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,20 +60,17 @@ import com.ml.shubham0204.docqa.domain.readers.Readers
 import com.ml.shubham0204.docqa.ui.components.AppAlertDialog
 import com.ml.shubham0204.docqa.ui.components.createAlertDialog
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
-import hideProgressDialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.koin.androidx.compose.koinViewModel
-import showProgressDialog
 
 private val showDocDetailDialog = mutableStateOf(false)
 private val dialogDoc = mutableStateOf<Document?>(null)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DocsScreen(onBackClick: (() -> Unit)) {
+fun DocsScreen(
+    uiState: DocsScreenUIState,
+    onBackClick: (() -> Unit),
+    onEvent: (DocsScreenUIEvent) -> Unit,
+) {
     DocQATheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -98,11 +93,10 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
                 )
             },
         ) { innerPadding ->
-            val docsViewModel: DocsViewModel = koinViewModel()
             Column(modifier = Modifier.padding(innerPadding).fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(12.dp))
-                DocsList(docsViewModel)
-                DocOperations(docsViewModel)
+                DocsList(uiState.documents, onEvent)
+                DocOperations(uiState.docDownloadState, onEvent)
                 AppProgressDialog()
                 AppAlertDialog()
                 DocDetailDialog()
@@ -112,8 +106,10 @@ fun DocsScreen(onBackClick: (() -> Unit)) {
 }
 
 @Composable
-private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
-    val docs by docsViewModel.getAllDocuments().collectAsState(emptyList())
+private fun ColumnScope.DocsList(
+    docs: List<Document>,
+    onEvent: (DocsScreenUIEvent) -> Unit,
+) {
     LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
         items(docs) { doc ->
             DocsListItem(
@@ -125,7 +121,7 @@ private fun ColumnScope.DocsList(docsViewModel: DocsViewModel) {
                             doc.docText
                         },
                 ),
-                onRemoveDocClick = { docId -> docsViewModel.removeDocument(docId) },
+                onRemoveDocClick = { docId -> onEvent(DocsScreenUIEvent.OnRemoveDoc(docId)) },
             )
         }
     }
@@ -191,7 +187,10 @@ private fun DocsListItem(
 }
 
 @Composable
-private fun DocOperations(docsViewModel: DocsViewModel) {
+private fun DocOperations(
+    docDownloadState: DocDownloadState,
+    onEvent: (DocsScreenUIEvent) -> Unit,
+) {
     val context = LocalContext.current
     // Intent to get file from user's device
     // See https://developer.android.com/guide/components/intents-common#GetFile
@@ -203,29 +202,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
             contract = ActivityResultContracts.StartActivityForResult(),
         ) {
             it.data?.data?.let { uri ->
-                var docFileName = ""
-                // Retrieve file information from URI
-                // See
-                // https://developer.android.com/training/secure-file-sharing/retrieve-info#RetrieveFileInfo
-                context.contentResolver.query(uri, null, null, null)?.use { cursor ->
-                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    cursor.moveToFirst()
-                    docFileName = cursor.getString(nameIndex)
-                }
-                context.contentResolver.openInputStream(uri)?.let { inputStream ->
-                    showProgressDialog()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        docsViewModel.addDocument(
-                            inputStream,
-                            docFileName,
-                            docType,
-                        )
-                        withContext(Dispatchers.IO) {
-                            hideProgressDialog()
-                            inputStream.close()
-                        }
-                    }
-                }
+                onEvent(DocsScreenUIEvent.OnDocSelected(uri, docType))
             }
         }
 
@@ -243,7 +220,11 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 )
             },
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add PDF document", tint = Color.White)
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add PDF document",
+                tint = Color.White,
+            )
             Text(text = "PDF", color = Color.White)
         }
 
@@ -261,7 +242,11 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 )
             },
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add DOCX document", tint = Color.White)
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add DOCX document",
+                tint = Color.White,
+            )
             Text(text = "DOCX", color = Color.White)
         }
 
@@ -278,6 +263,21 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
                 modifier = Modifier.rotate(45f),
             )
             Text(text = "URL", color = Color.White)
+        }
+    }
+
+    when (docDownloadState) {
+        DocDownloadState.DOWNLOAD_NONE -> {}
+        DocDownloadState.DOWNLOAD_IN_PROGRESS -> {
+            showUrlDialog = false
+        }
+
+        DocDownloadState.DOWNLOAD_SUCCESS -> {
+            Toast.makeText(context, "Document added from URL", Toast.LENGTH_SHORT).show()
+        }
+
+        DocDownloadState.DOWNLOAD_FAILURE -> {
+            Toast.makeText(context, "Failed to download", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -311,18 +311,7 @@ private fun DocOperations(docsViewModel: DocsViewModel) {
             confirmButton = {
                 Button(onClick = {
                     if (pdfUrl.isNotBlank()) {
-                        showProgressDialog()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            docsViewModel.addDocumentFromUrl(pdfUrl, context) { success ->
-                                hideProgressDialog()
-                                if (success) {
-                                    Toast.makeText(context, "PDF added from source", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context, "Failed to download", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            showUrlDialog = false
-                        }
+                        onEvent(DocsScreenUIEvent.OnDocURLSubmitted(context, pdfUrl, docType))
                     }
                 }) {
                     Text("Add")

@@ -29,19 +29,20 @@ fun AppProgressDialog() {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier =
-                    Modifier.fillMaxWidth()
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, shape = RoundedCornerShape(8.dp)),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(vertical = 24.dp)
+                    modifier = Modifier.padding(vertical = 24.dp),
                 ) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     Spacer(modifier = Modifier.padding(4.dp))
                     Text(
                         text = progressDialogText.value,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     )
                 }
             }

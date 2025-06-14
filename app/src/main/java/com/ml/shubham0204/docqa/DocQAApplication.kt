@@ -8,7 +8,6 @@ import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
 
 class DocQAApplication : Application() {
-
     override fun onCreate() {
         super.onCreate()
         startKoin {

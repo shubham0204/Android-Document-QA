@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -109,7 +110,7 @@ dependencies {
     ksp(libs.koin.ksp.compiler)
 
     // For secured/encrypted shared preferences
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.security:security-crypto:1.1.0-alpha07")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

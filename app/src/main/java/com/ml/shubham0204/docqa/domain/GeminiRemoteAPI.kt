@@ -1,4 +1,4 @@
-package com.ml.shubham0204.docqa.domain.llm
+package com.ml.shubham0204.docqa.domain
 
 import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
