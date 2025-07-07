@@ -1,9 +1,9 @@
 package com.ml.shubham0204.docqa.ui.screens.chat
 
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -20,8 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +34,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,51 +45,64 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.ml.shubham0204.docqa.R
 import com.ml.shubham0204.docqa.ui.components.AppAlertDialog
 import com.ml.shubham0204.docqa.ui.components.createAlertDialog
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
-import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    onOpenDocsClick: (() -> Unit),
-    onEditAPIKeyClick: (() -> Unit),
+    screenUiState: ChatScreenUIState,
+    onScreenEvent: (ChatScreenUIEvent) -> Unit,
 ) {
     DocQATheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Chat", style = MaterialTheme.typography.headlineSmall) },
+                    title = {
+                        Text(
+                            text = "Chat",
+                            style = MaterialTheme.typography.headlineSmall,
+                        )
+                    },
                     actions = {
-                        IconButton(onClick = onOpenDocsClick) {
-                            Icon(
-                                imageVector = Icons.Default.Folder,
-                                contentDescription = "Open Documents",
-                            )
-                        }
-                        IconButton(onClick = onEditAPIKeyClick) {
-                            Icon(
-                                imageVector = Icons.Default.Key,
-                                contentDescription = "Edit API Key",
+                        var moreOptionsVisible by remember { mutableStateOf(false) }
+                        Box {
+                            IconButton(onClick = {
+                                moreOptionsVisible = true
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = "Options",
+                                )
+                            }
+                            ChatScreenMoreOptionsPopup(
+                                expanded = moreOptionsVisible,
+                                onDismissRequest = { moreOptionsVisible = !moreOptionsVisible },
+                                onItemClick = { onScreenEvent(it) },
                             )
                         }
                     },
                 )
             },
         ) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding).padding(16.dp).fillMaxWidth()) {
-                val chatViewModel: ChatViewModel = koinViewModel()
+            Column(
+                modifier =
+                    Modifier
+                        .padding(innerPadding)
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+            ) {
                 Column {
-                    QALayout(chatViewModel)
+                    QALayout(screenUiState)
                     Spacer(modifier = Modifier.height(8.dp))
-                    QueryInput(chatViewModel, onEditAPIKeyClick)
+                    QueryInput(onScreenEvent)
                 }
             }
             AppAlertDialog()
@@ -100,18 +111,20 @@ fun ChatScreen(
 }
 
 @Composable
-private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
-    val question by chatViewModel.questionState.collectAsState()
-    val response by chatViewModel.responseState.collectAsState()
-    val isGeneratingResponse by chatViewModel.isGeneratingResponseState.collectAsState()
-    val retrievedContextList by chatViewModel.retrievedContextListState.collectAsState()
+private fun ColumnScope.QALayout(screenUiState: ChatScreenUIState) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize().weight(1f),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .weight(1f),
     ) {
-        if (question.trim().isEmpty()) {
+        if (screenUiState.question.trim().isEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize().align(Alignment.CenterHorizontally),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .align(Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -130,14 +143,17 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
         } else {
             LazyColumn {
                 item {
-                    Text(text = question, style = MaterialTheme.typography.headlineLarge)
-                    if (isGeneratingResponse) {
+                    Text(
+                        text = screenUiState.question,
+                        style = MaterialTheme.typography.headlineLarge,
+                    )
+                    if (screenUiState.isGeneratingResponse) {
                         Spacer(modifier = Modifier.height(4.dp))
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
                 }
                 item {
-                    if (!isGeneratingResponse) {
+                    if (!screenUiState.isGeneratingResponse) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Column(
                             modifier =
@@ -148,7 +164,7 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                         ) {
                             MarkdownText(
                                 modifier = Modifier.fillMaxWidth(),
-                                markdown = response,
+                                markdown = screenUiState.response,
                                 style =
                                     TextStyle(
                                         color = Color.Black,
@@ -164,7 +180,7 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                                         val sendIntent: Intent =
                                             Intent().apply {
                                                 action = Intent.ACTION_SEND
-                                                putExtra(Intent.EXTRA_TEXT, response)
+                                                putExtra(Intent.EXTRA_TEXT, screenUiState.response)
                                                 type = "text/plain"
                                             }
                                         val shareIntent = Intent.createChooser(sendIntent, null)
@@ -184,8 +200,8 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
-                if (!isGeneratingResponse) {
-                    items(retrievedContextList) { retrievedContext ->
+                if (!screenUiState.isGeneratingResponse) {
+                    items(screenUiState.retrievedContextList) { retrievedContext ->
                         Column(
                             modifier =
                                 Modifier
@@ -216,16 +232,16 @@ private fun ColumnScope.QALayout(chatViewModel: ChatViewModel) {
 }
 
 @Composable
-private fun QueryInput(
-    chatViewModel: ChatViewModel,
-    onEditAPIKeyClick: () -> Unit,
-) {
+private fun QueryInput(onEvent: (ChatScreenUIEvent) -> Unit) {
     var questionText by remember { mutableStateOf("") }
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     Row(verticalAlignment = Alignment.CenterVertically) {
         TextField(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             value = questionText,
             onValueChange = { questionText = it },
             shape = RoundedCornerShape(16.dp),
@@ -244,36 +260,13 @@ private fun QueryInput(
             modifier = Modifier.background(Color.Blue, CircleShape),
             onClick = {
                 keyboardController?.hide()
-                if (!chatViewModel.checkNumDocuments()) {
-                    Toast
-                        .makeText(context, "Add documents to execute queries", Toast.LENGTH_LONG)
-                        .show()
-                    return@IconButton
-                }
-                if (!chatViewModel.checkValidAPIKey()) {
-                    createAlertDialog(
-                        dialogTitle = "Invalid API Key",
-                        dialogText = "Please enter a Gemini API key to use a LLM for generating responses.",
-                        dialogPositiveButtonText = "Add API key",
-                        onPositiveButtonClick = onEditAPIKeyClick,
-                        dialogNegativeButtonText = "Open Gemini Console",
-                        onNegativeButtonClick = {
-                            Intent(Intent.ACTION_VIEW).apply {
-                                data = "https://aistudio.google.com/apikey".toUri()
-                                context.startActivity(this)
-                            }
-                        },
-                    )
-                    return@IconButton
-                }
-                if (questionText.trim().isEmpty()) {
-                    Toast.makeText(context, "Enter a query to execute", Toast.LENGTH_LONG).show()
-                    return@IconButton
-                }
+
                 try {
-                    chatViewModel.getAnswer(
-                        questionText,
-                        context.getString(R.string.prompt_1),
+                    onEvent(
+                        ChatScreenUIEvent.ResponseGeneration.Start(
+                            questionText,
+                            context.getString(R.string.prompt_1),
+                        ),
                     )
                 } catch (e: Exception) {
                     createAlertDialog(
@@ -294,4 +287,13 @@ private fun QueryInput(
             )
         }
     }
+}
+
+@Composable
+@Preview
+private fun ChatScreenPreview() {
+    ChatScreen(
+        screenUiState = ChatScreenUIState(),
+        onScreenEvent = { },
+    )
 }

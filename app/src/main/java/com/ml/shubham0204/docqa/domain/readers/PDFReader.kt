@@ -5,7 +5,6 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import java.io.InputStream
 
 class PDFReader : Reader() {
-
     override fun readFromInputStream(inputStream: InputStream): String {
         val pdfReader = PdfReader(inputStream)
         var pdfText = ""

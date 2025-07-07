@@ -1,4 +1,4 @@
-package com.ml.shubham0204.docqa.domain.embeddings
+package com.ml.shubham0204.docqa.domain
 
 import android.content.Context
 import com.ml.shubham0204.sentence_embeddings.SentenceEmbedding

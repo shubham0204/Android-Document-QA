@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ml.shubham0204.docqa.ui.theme.DocQATheme
 import org.koin.androidx.compose.koinViewModel
@@ -61,11 +62,17 @@ fun EditAPIKeyScreen(onBackClick: () -> Unit) {
             val viewModel: EditAPIKeyViewModel = koinViewModel()
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(innerPadding).fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(innerPadding)
+                        .fillMaxWidth(),
             ) {
                 var apiKey by remember { mutableStateOf(viewModel.getAPIKey() ?: "") }
                 TextField(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                     value = apiKey,
                     onValueChange = { apiKey = it },
                     shape = RoundedCornerShape(16.dp),
@@ -92,4 +99,10 @@ fun EditAPIKeyScreen(onBackClick: () -> Unit) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun EditAPIKeyScreenPreview() {
+    EditAPIKeyScreen(onBackClick = {})
 }

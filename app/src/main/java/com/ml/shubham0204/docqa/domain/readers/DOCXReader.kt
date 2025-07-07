@@ -5,7 +5,6 @@ import java.io.IOException
 import java.io.InputStream
 
 class DOCXReader : Reader() {
-
     override fun readFromInputStream(inputStream: InputStream): String? {
         try {
             val document = XWPFDocument(inputStream)
